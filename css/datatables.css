@@ -1,0 +1,25 @@
+/* Custom CSS for Edukit Data tables */
+
+
+
+.dataTable th
+{
+	text-align:left;
+	color:#fff;
+	background:#4f4f4f;
+}
+
+.dataTable td {
+    border-bottom: 1px solid #ccc;
+}
+
+.dataTable tr:hover {
+    background:#f1f1f1;
+}
+
+
+.dataTables_wrapper
+{
+	padding:20px 50px 20px 10px;
+	
+}

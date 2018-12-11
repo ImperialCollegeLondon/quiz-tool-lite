@@ -1,0 +1,36 @@
+#ekTabsContent
+{
+	
+	margin-top:0px;
+	padding-top:0px;
+	
+}
+#ekTabs ul
+{
+	margin:0px;
+	border-bottom:solid 2px #ccc;
+}
+#ekTabs li
+{
+	display:inline-block;
+	padding:10px;
+	border-top:1px solid #ccc;
+	border-left:1px solid #ccc;
+	border-right:1px solid #ccc;
+	margin-right:5px;
+	border-radius:7px 7px 0px 0px;
+	margin-bottom: 0px;
+	background:#e2e2e2;
+	color:#898989;
+}
+#ekTabs li:hover
+{
+	background:#f1f1f1;
+	color:#000;
+	cursor:pointer;
+}
+.activeTab
+{
+	background:#fff !important;
+	color:#000 !important;
+}

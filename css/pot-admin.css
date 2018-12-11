@@ -1,0 +1,16 @@
+
+
+/* CSS for pot edit pages. Hiding draft stuff  etc. */
+
+#misc-publishing-actions,
+
+#minor-publishing-actions, 
+
+#edit-slug-box
+
+{
+
+	display:none;
+
+}
+

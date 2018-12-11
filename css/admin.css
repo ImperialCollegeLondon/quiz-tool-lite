@@ -1,0 +1,133 @@
+
+/* Content boxes */
+.contentBox
+{
+	border:1px solid #ccc;
+	box-shadow: 3px 3px 5px 1px #888888;
+	
+}
+.qTypeChooserBox
+{
+	border:1px solid #ccc;
+	text-align:center;
+	padding:10px;
+	margin:0px 10px 30px 5px;
+	width:160px;
+	box-shadow: 3px 3px 5px 1px #888888;
+	float:left;
+	font-size:16px;
+
+}
+
+.qTypeChooserBox > div
+{
+	padding:10px;
+}
+.qTypeChooserBox:hover
+{
+	background:#eaeaea;
+}
+
+/* qType Choose Page */
+h2.qTypeChooseHeader
+{
+	display:block;
+	clear:both;
+	background:#ccc;
+	padding:20px;
+	margin-top:30px;
+	border-radius:3px;
+}
+
+
+
+
+/* Add Cube icon to POT list*/
+.type-ek_pot td a.row-title {
+	position:relative;
+}
+.type-ek_pot td a.row-title:before
+{
+	font-family: "Font Awesome 5 Free";
+	padding-right:7px;
+	content: "\f1b2"; 
+	font-size:20px;
+	font-weight:900;
+}
+
+
+/* Add Cubes icon to QUIz list*/
+.type-ek_quiz td a.row-title {
+	position:relative;
+}
+.type-ek_quiz td a.row-title:before
+{
+	font-family: "Font Awesome 5 Free";	
+	padding-right:7px;
+	content: "\f1b3"; 
+	font-size:25px;
+}
+/*
+li#menu-posts-ek_pot .current {
+    display: none;
+}
+*/
+.quizOptionsBox label {
+	display: block;
+	padding:5px 0px;
+}
+.quizOptionsBox h3
+{
+	
+}
+#quiztable table
+{
+	padding:5px !important;
+	padding-left:0px !important;	
+	margin:0px !important;
+	width:90% !important;
+	
+}
+#quiztable th
+{
+	background:#ccc;
+	padding:6px;
+	text-align:left;
+}
+#quiztable td
+{
+	padding:0px !important;
+	border-bottom:1px solid #ccc !important;
+	margin:0px !important;
+	line-height:35px;
+}
+/* Boundary Stuff */
+#boundaryGraphWrapper
+{
+	
+}
+#boundaryGraphWrapper > *
+{
+	line-height:350%;
+	float:left;
+}
+/* Tooltips */
+a.tooltip {outline:none; }
+a.tooltip strong {line-height:30px;}
+a.tooltip:hover {text-decoration:none;} 
+a.tooltip span {
+    z-index:10;display:none; padding:14px 20px;
+    margin-top:60px; margin-left:2px;
+    width:300px; line-height:16px;
+}
+a.tooltip:hover span{
+    display:inline; position:absolute; color:#111;
+    border:1px solid #ccc; background:#f1f1f1;}
+.callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
+    
+/*CSS3 extras*/
+a.tooltip span
+{
+    border-radius:4px;
+    box-shadow: 5px 5px 8px #CCC;
+}

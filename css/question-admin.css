@@ -1,0 +1,117 @@
+/* CSS for  edit pages. Hiding draft stuff  etc. */
+#misc-publishing-actions,
+#minor-publishing-actions, 
+#edit-slug-box
+{
+	display:none;
+}
+/* Response Options Editing */
+#options_list_wrap {
+	border:         1px solid #ccc;
+	background:     #f0f0f0;
+}
+.option-item {
+	border-bottom:  1px solid #ccc;
+	clear:          both;
+	background:     #fbfbfb;
+	cursor:         move;
+	margin:10px 0px;
+}
+
+
+
+
+.option-item > div {
+	float:          left;
+	padding:        8px 5px;
+}
+.option-item > div:last-of-type {
+	float:          right;
+}
+.option-display-number {
+	max-width:      50px;
+}
+.option-key {
+}
+.option-value {
+}
+.option-value input[type=text] {
+	width:  300px;
+}
+#options_input_wrap {
+	margin:         20px 0;
+	border:         0px solid #ccc;
+	padding:        10px;
+}
+#new_option_text {
+	
+}
+#add_option_feedback {
+	color:          #bc5454;
+	font-weight:    600;
+	padding:   15px 10px;
+}
+#options_list_wrap .isCorrect
+{
+	background:#e0ffe1;
+}
+
+
+
+
+/* Remove Link */
+
+.option-item-remove:hover, .option-feedback-toggle:hover
+{
+	cursor:pointer;
+}
+
+.option-item .option-item-remove
+{
+	margin:8px;	
+}
+
+
+.option-feedback-toggle
+{
+	margin-top:20px;
+	color:#336699;
+}
+
+
+.feedbackTextareaDiv textarea
+{
+	width:600px;
+	height:150px;
+}
+
+
+
+.newResponseOption
+{
+	width:300px;
+}
+
+/* Adds margin to the bottom of the text inputs to account for the correct answer checkbox */
+#options_list_wrap .option-value, #options_input_wrap, #new_option_text
+{
+	margin:0px 0px 10px 0px;
+}
+/* Bold the Currnet Question Number list */
+.option-display-number
+{
+	margin:3px;
+	font-weight:bold;
+	font-size:16px;
+}
+/* Highlight the error input box if nothing added */
+input.inputError
+{
+	border:1px solid #bc5454;
+}
+.hide{
+	display:none;
+}
+.show{
+	display:block;
+}
