@@ -3,10 +3,11 @@
 Plugin Name: Quiz Tool Pro by EduKit
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Powerful quiz tool for displaying questions and quizzes on pages and posts
-Version: 3.0
+Version: 3.0.1
 Author: Alex Furr and Simon Ward
 Author URI: http://www.edu-kit.org
 License: GPL
+GitHub Plugin URI: https://github.com/ImperialCollegeLondon/quiz-tool-lite
 */
 
 date_default_timezone_set('UTC');
