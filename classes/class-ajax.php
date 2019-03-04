@@ -37,6 +37,10 @@ class ek_quizAjax
 		
 		// Backend
 		add_action( 'wp_ajax_drawNewResponseOption', array($this, 'drawNewResponseOption' ));
+		add_action( 'wp_ajax_duplicateQuestion', array($this, 'duplicateQuestion' ));
+		
+		
+		
 		
 		
 	}
@@ -315,6 +319,19 @@ class ek_quizAjax
 		
 		
 		
+	}
+	
+	public static function duplicateQuestion()
+	{
+		
+		
+		$targetQuestionID = $_POST['targetQuestionID'];
+		$targetPotID = $_POST['targetPotID'];
+	
+		ekQuestions_CPT::ek_question_duplicate($targetQuestionID, $targetPotID);
+		
+		
+		die();
 	}
 	
 } // End Class

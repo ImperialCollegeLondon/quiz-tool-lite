@@ -58,7 +58,6 @@ class ekQuestions_CPT
 		// Add duplicate post link and remove quick edit
 		add_filter( 'post_row_actions', array($this, 'custom_quick_links'), 10, 2 );
 		add_filter( 'page_row_actions', array($this,'custom_quick_links'), 10, 2 );		
-		add_action( 'admin_action_ek_question_duplicate', array($this, 'ek_question_duplicate') );
 		
 		//Check for Conversions
 		add_action( 'admin_action_ek_question_convertToMultipleResponse', array($this, 'ek_question_convertToMultipleResponse') );		
@@ -73,6 +72,14 @@ class ekQuestions_CPT
 		// Force update question title to be a shorteneded version of the content
 		add_filter( 'save_post' , array($this, 'add_question_title') , 200 ) ; // Grabs the inserted post data so you can modify it.
 
+		// Create pot array for all questions if it's the question list - for loading duplicate to drop downs
+		add_action( 'admin_enqueue_scripts', array ($this, 'questionAdminListFunctions') );
+		
+		
+		// Add custom JS if on questoin list edit page
+		add_action( 'admin_head', array ($this, 'questionAdminListJS') );
+		
+		add_action( 'admin_notices', array($this, 'checkForCustomFeedback' ) );
 		
 		
 				
@@ -1075,6 +1082,9 @@ class ekQuestions_CPT
 	
 	// Remove the quick edit from this post type
 	function custom_quick_links( $actions = array(), $post = null ) {
+		
+		
+		$postParentID = $post->post_parent;
 		// Abort if the post type is not "ek_question"
 		if ( ! is_post_type_archive( 'ek_question' ) ) {
 			return $actions;
@@ -1096,8 +1106,54 @@ class ekQuestions_CPT
 			
 			$questionID = $post->ID;
 			
+			global $qPots;
+			
 			$potID = $_SESSION['currentPotID'];
-			$actions['duplicate'] = '<a href="' . wp_nonce_url('admin.php?type=ek_question&potID='.$potID.'&action=ek_question_duplicate&post=' . $questionID, basename(__FILE__), 'duplicate_nonce' ) . '" title="Duplicate this item" rel="permalink">Duplicate</a>';
+			//$actions['duplicate'] = '<a href="' . wp_nonce_url('admin.php?type=ek_question&potID='.$potID.'&action=ek_question_duplicate&post=' . $questionID, basename(__FILE__), 'duplicate_nonce' ) . '" title="Duplicate this item" rel="permalink">Duplicate</a>';
+						
+			$duplicateString = '
+			<a href="" id="duplicateClick'.$questionID.'">Duplicate</a>
+			<div id="duplicateOptions'.$questionID.'" style="color:#000; display:none">Duplicate To:<br/>			
+			';
+			
+			//$duplicateString.='<form method="post" action="edit.php?post_type=ek_question&potID='.$postParentID.'&action=ek_question_duplicate">';
+			$duplicateString.='<select name="targetPot_'.$questionID.'" id="targetPot_'.$questionID.'">';
+			foreach($qPots as $potInfo)
+			{
+				$tempPotID = $potInfo->ID;
+				$tempPotName = $potInfo->post_title;
+				$duplicateString.='<option value="'.$tempPotID.'"';
+				if($postParentID==$tempPotID)
+				{
+					$duplicateString.= ' selected ';
+				}
+				
+				$duplicateString.='>';
+				$duplicateString.=$tempPotName;
+				if($postParentID==$tempPotID)
+				{
+					$duplicateString.= ' (Current Pot) ';
+				}
+				$duplicateString.='</option>';
+			}
+			$duplicateString.='</select>';
+			
+			
+			$duplicateString.='<a href="#" data-potid="'.$postParentID.'" data-questionid="'.$questionID.'" class="button-secondary confirmDuplication">Duplicate</a>';
+			$duplicateString.='</div>
+			<script>
+			
+			jQuery( "#duplicateClick'.$questionID.'" ).click(function() {
+				event.preventDefault();
+				jQuery( "#duplicateOptions'.$questionID.'" ).toggle( "fast" );
+			});
+			
+
+
+			</script>
+			';
+			
+			$actions['duplicate'] = $duplicateString;
 			
 			
 			// Also look at the current question type = if its single response then let them convert to multiResponse
@@ -1117,26 +1173,14 @@ class ekQuestions_CPT
 	/*
 	 * Function creates post duplicate as a draft and redirects then to the edit post screen
 	 */
-	function ek_question_duplicate(){
+	function ek_question_duplicate($targetQuestionID, $targetPotID)
+	{
+	
+	
+		
 		global $wpdb;
-		if (! ( isset( $_GET['post']) || isset( $_POST['post'])  || ( isset($_REQUEST['action']) && 'ek_question_duplicate' == $_REQUEST['action'] ) ) ) {
-			wp_die('No post to duplicate has been supplied!');
-		}
-	 
-		/*
-		 * Nonce verification
-		 */
-		if ( !isset( $_GET['duplicate_nonce'] ) || !wp_verify_nonce( $_GET['duplicate_nonce'], basename( __FILE__ ) ) )
-			return;
-	 
-		/*
-		 * get the original post id
-		 */
-		$post_id = (isset($_GET['post']) ? absint( $_GET['post'] ) : absint( $_POST['post'] ) );
-		/*
-		 * and all the original post data then
-		 */
-		$post = get_post( $post_id );
+		
+		$post = get_post( $targetQuestionID );
 	 
 		/*
 		 * if you don't want current user to be the new post author,
@@ -1144,72 +1188,57 @@ class ekQuestions_CPT
 		 */
 		$current_user = wp_get_current_user();
 		$new_post_author = $current_user->ID;
-	 
+		
+
 		/*
-		 * if post data exists, create the post duplicate
+		 * new post data array
 		 */
-		if (isset( $post ) && $post != null) {
-	 
-			/*
-			 * new post data array
-			 */
-			$args = array(
-				'comment_status' => $post->comment_status,
-				'ping_status'    => $post->ping_status,
-				'post_author'    => $new_post_author,
-				'post_content'   => $post->post_content,
-				'post_excerpt'   => $post->post_excerpt,
-				'post_name'      => $post->post_name,
-				'post_parent'    => $post->post_parent,
-				'post_password'  => $post->post_password,
-				'post_status'    => 'publish',
-				'post_title'     => $post->post_title,
-				'post_type'      => $post->post_type,
-				'to_ping'        => $post->to_ping,
-				'menu_order'     => $post->menu_order
-			);
-	 
-			/*
-			 * insert the post by wp_insert_post() function
-			 */
-			$new_post_id = wp_insert_post( $args );
-	 
-			/*
-			 * get all current post terms ad set them to the new post draft
-			 */
-			$taxonomies = get_object_taxonomies($post->post_type); // returns array of taxonomy names for post type, ex array("category", "post_tag");
-			foreach ($taxonomies as $taxonomy) {
-				$post_terms = wp_get_object_terms($post_id, $taxonomy, array('fields' => 'slugs'));
-				wp_set_object_terms($new_post_id, $post_terms, $taxonomy, false);
-			}
-	 
-			/*
-			 * duplicate all post meta just in two SQL queries
-			 */
-			$post_meta_infos = $wpdb->get_results("SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$post_id");
-			if (count($post_meta_infos)!=0) {
-				$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) ";
-				foreach ($post_meta_infos as $meta_info) {
-					$meta_key = $meta_info->meta_key;
-					if( $meta_key == '_wp_old_slug' ) continue;
-					$meta_value = addslashes($meta_info->meta_value);
-					$sql_query_sel[]= "SELECT $new_post_id, '$meta_key', '$meta_value'";
-				}
-				$sql_query.= implode(" UNION ALL ", $sql_query_sel);
-				$wpdb->query($sql_query);
-			}
-	 
-	 
-			/*
-			 * finally, redirect to the edit post screen for the new draft
-			 */
-			 // Get the Parent ID (Pot ID)
-			$potID = wp_get_post_parent_id($post_id);
-			wp_redirect( admin_url( 'edit.php?post_type=ek_question&potID='.$potID ) );
-			exit;
-		} else {
-			wp_die('Post creation failed, could not find original post: ' . $post_id);
+		$args = array(
+			'comment_status' => $post->comment_status,
+			'ping_status'    => $post->ping_status,
+			'post_author'    => $new_post_author,
+			'post_content'   => $post->post_content,
+			'post_excerpt'   => $post->post_excerpt,
+			'post_name'      => $post->post_name,
+			'post_parent'    => $targetPotID,
+			'post_password'  => $post->post_password,
+			'post_status'    => 'publish',
+			'post_title'     => $post->post_title,
+			'post_type'      => $post->post_type,
+			'to_ping'        => $post->to_ping,
+			'menu_order'     => $post->menu_order
+		);
+ 
+		/*
+		 * insert the post by wp_insert_post() function
+		 */
+		$new_post_id = wp_insert_post( $args );
+ 
+		/*
+		 * get all current post terms ad set them to the new post draft
+		 */
+		$taxonomies = get_object_taxonomies($post->post_type); // returns array of taxonomy names for post type, ex array("category", "post_tag");
+		foreach ($taxonomies as $taxonomy) {
+			$post_terms = wp_get_object_terms($post_id, $taxonomy, array('fields' => 'slugs'));
+			wp_set_object_terms($new_post_id, $post_terms, $taxonomy, false);
 		}
+ 
+		/*
+		 * duplicate all post meta just in two SQL queries
+		 */
+		$post_meta_infos = $wpdb->get_results("SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=$targetQuestionID");
+		if (count($post_meta_infos)!=0) {
+			$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) ";
+			foreach ($post_meta_infos as $meta_info) {
+				$meta_key = $meta_info->meta_key;
+				if( $meta_key == '_wp_old_slug' ) continue;
+				$meta_value = addslashes($meta_info->meta_value);
+				$sql_query_sel[]= "SELECT $new_post_id, '$meta_key', '$meta_value'";
+			}
+			$sql_query.= implode(" UNION ALL ", $sql_query_sel);
+			$wpdb->query($sql_query);
+		}
+
 	}
 		
 	// Make sure you can't see the question when viewing fron front end unless admin	
@@ -1315,6 +1344,107 @@ class ekQuestions_CPT
 		wp_redirect( admin_url( 'edit.php?post_type=ek_question&potID='.$potID ) );
 	
 
+	}
+	
+	
+	
+	
+	static function questionAdminListFunctions($hook_suffix)
+	{
+		
+		global $post_type;
+		$screen = get_current_screen();
+		
+		
+		if( $hook_suffix== "edit.php" && $post_type=="ek_question")
+		{
+			
+			
+			// Generate global array of all questoin pots
+			global $qPots;
+			$qPots = ekQuiz_queries::getPots();
+			
+			
+		}
+    
+	}
+	
+	static function questionAdminListJS()
+	{
+		global $pagenow ;		
+		global $typenow;
+
+		
+		if( $pagenow== "edit.php" && $typenow=="ek_question")
+		{
+			
+			
+			?>
+			<script>
+			
+			jQuery( document ).ready(function()
+			{
+		
+			
+				jQuery(".confirmDuplication").on('click', function(event){
+					
+					
+									
+					var targetQuestionID = jQuery( this ).data( "questionid" );
+					var thisPotID = jQuery( this ).data( "potid" );
+					var targetPotID = jQuery('#targetPot_'+targetQuestionID).val();
+					
+					
+					ek_question_duplicate(targetQuestionID, targetPotID, thisPotID);						
+					
+					event.stopPropagation();
+					
+					
+
+					
+					
+				});		
+
+			});			
+
+			
+			
+			</script>
+			<?php
+			
+		}
+    
+	}	
+	
+	
+	function checkForCustomFeedback()
+	{
+		
+		global $pagenow ;		
+		global $typenow;
+
+		
+		if( $pagenow== "edit.php" && $typenow=="ek_question")
+		{
+			
+			if(isset($_GET['feedback']) )
+			{
+				$feedbackType = $_GET['feedback'];
+				
+				switch ($feedbackType)
+				{
+					
+					case "questionduplicated":
+		
+						echo '<div class="notice notice-success is-dismissible">';
+						echo '<p>Question Duplicated</p>';
+						echo '</div>';					
+					
+					break;					
+					
+				}
+			}
+		}
 	}
 	
 	

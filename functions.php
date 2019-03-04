@@ -83,6 +83,10 @@ class ekQuiz
 		
 		wp_enqueue_style( 'ek-quiz-font-awesome' );		
 		
+		// Admin JS
+		wp_enqueue_script('ek_quiz_admin_js', EK_QUIZ_PLUGIN_URL.'/js/admin.js', array( 'jquery' ) ); #Admin JS
+
+		
 		
 		
 		// Other general JS stuff for admin
@@ -104,6 +108,9 @@ class ekQuiz
 		);
 		
 		wp_localize_script( 'ek_quiz_response_edit_js', 'quizAdminAjax', $params );			
+		
+		wp_localize_script( 'ek_quiz_admin_js', 'quizAdminAjax', $params );			
+		
 		
 		
 	}
