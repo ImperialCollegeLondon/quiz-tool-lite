@@ -36,6 +36,16 @@ if ( isset( $_GET['action'] ) )
 		
 			$defaultCorrectFeedback = $_POST['defaultCorrectFeedback'];
 			$defaultIncorrectFeedback = $_POST['defaultIncorrectFeedback'];
+			$showCorrectAnswer = '';
+			if(isset($_POST['showCorrectAnswer']) )
+			{
+				$showCorrectAnswer = $_POST['showCorrectAnswer'];
+			}
+			
+			
+			
+			
+			
 			
 			// Update the defaults
 			update_option('ek-quiz-correct-feedback', $defaultCorrectFeedback);
@@ -43,9 +53,29 @@ if ( isset( $_GET['action'] ) )
 			update_option('ek-quiz-showCorrectAnswer', $showCorrectAnswer);
 			
 			
-			
 			$min_access_level = $_POST['min_access_level'];
 			update_option('min_quiz_access_level', $min_access_level);
+
+			$updateShowCorrectForAll = '';
+			if(isset($_POST['updateShowCorrectForAll']) )
+			{
+				// Get all question types
+				$potRS = ekQuiz_queries::getPots();
+				foreach ($potRS as $potInfo)
+				{
+					$potID = $potInfo->ID;
+					$args = array("potID" => $potID);
+					$questionsRS = ekQuiz_queries::getPotQuestions($args);
+					
+					foreach($questionsRS as $questionInfo)
+					{
+						$questionID = $questionInfo->ID;						
+						update_post_meta( $questionID, 'showCorrectAnswer', $showCorrectAnswer );		
+						
+					}
+				}
+			}			
+			
 			
 			
 			echo '<div class="notice notice-success is-dismissible"><p>Settings Updated</p></div>';
@@ -74,7 +104,7 @@ if($showCorrectAnswer=="on")
 
 
 $minAccessLevel  = get_option('min_quiz_access_level');
-if($minAccessLevel==""){$minAccessLevel="manage_options";}
+if($minAccessLevel==""){$minAccessLevel="edit_pages";}
 
 ?>
 
@@ -102,6 +132,14 @@ if($minAccessLevel==""){$minAccessLevel="manage_options";}
 <?php
 echo '<input type="checkbox" id="showCorrectAnswer" name="showCorrectAnswer" '.$showCorrectAnswerChecked.'>';
 echo 'Show correct answers and feedback on submit';
+?>
+</label>
+
+
+<br/><label for="updateShowCorrectForAll">
+<?php
+echo '<input type="checkbox" id="updateShowCorrectForAll" name="updateShowCorrectForAll">';
+echo 'Update all existing questions to this setting (cannot be undone!)';
 ?>
 </label>
  
