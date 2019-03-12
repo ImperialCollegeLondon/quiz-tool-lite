@@ -12,7 +12,7 @@
 	}	
 	
 	
-		wp_enqueue_style( 'ek-quiz-css' );		
+	wp_enqueue_style( 'ek-quiz-css' );		
 	
 ?>
 <?php
@@ -24,9 +24,6 @@ if ( isset( $_GET['action'] ) )
 	// Check the nonce before proceeding;	
 	$retrieved_nonce="";
 	if(isset($_REQUEST['_wpnonce'])){$retrieved_nonce = $_REQUEST['_wpnonce'];}
-	if (wp_verify_nonce($retrieved_nonce, 'submitForm' ) )
-	{
-
 	
 	$myAction = $_GET['action'];
 	switch ($myAction)
@@ -34,55 +31,102 @@ if ( isset( $_GET['action'] ) )
 	
 		case "updateSettings":
 		
-			$defaultCorrectFeedback = $_POST['defaultCorrectFeedback'];
-			$defaultIncorrectFeedback = $_POST['defaultIncorrectFeedback'];
-			$showCorrectAnswer = '';
-			if(isset($_POST['showCorrectAnswer']) )
-			{
-				$showCorrectAnswer = $_POST['showCorrectAnswer'];
+			if (wp_verify_nonce($retrieved_nonce, 'submitForm' ) )
+			{		
+				$defaultCorrectFeedback = $_POST['defaultCorrectFeedback'];
+				$defaultIncorrectFeedback = $_POST['defaultIncorrectFeedback'];
+				$showCorrectAnswer = '';
+				if(isset($_POST['showCorrectAnswer']) )
+				{
+					$showCorrectAnswer = $_POST['showCorrectAnswer'];
+				}
+				
+				// Update the defaults
+				update_option('ek-quiz-correct-feedback', $defaultCorrectFeedback);
+				update_option('ek-quiz-incorrect-feedback', $defaultIncorrectFeedback);
+				update_option('ek-quiz-showCorrectAnswer', $showCorrectAnswer);
+				
+				
+				$min_access_level = $_POST['min_access_level'];
+				update_option('min_quiz_access_level', $min_access_level);
+
+				$updateShowCorrectForAll = '';
+				if(isset($_POST['updateShowCorrectForAll']) )
+				{
+					// Get all question types
+					$potRS = ekQuiz_queries::getPots();
+					foreach ($potRS as $potInfo)
+					{
+						$potID = $potInfo->ID;
+						$args = array("potID" => $potID);
+						$questionsRS = ekQuiz_queries::getPotQuestions($args);
+						
+						foreach($questionsRS as $questionInfo)
+						{
+							$questionID = $questionInfo->ID;						
+							update_post_meta( $questionID, 'showCorrectAnswer', $showCorrectAnswer );		
+							
+						}
+					}
+				}			
+				
+				
+				
+				echo '<div class="notice notice-success is-dismissible"><p>Settings Updated</p></div>';
 			}
 			
 			
 			
-			
-			
-			
-			// Update the defaults
-			update_option('ek-quiz-correct-feedback', $defaultCorrectFeedback);
-			update_option('ek-quiz-incorrect-feedback', $defaultIncorrectFeedback);
-			update_option('ek-quiz-showCorrectAnswer', $showCorrectAnswer);
-			
-			
-			$min_access_level = $_POST['min_access_level'];
-			update_option('min_quiz_access_level', $min_access_level);
-
-			$updateShowCorrectForAll = '';
-			if(isset($_POST['updateShowCorrectForAll']) )
+		break;
+		
+		case "deleteAdminData":
+		
+			if (wp_verify_nonce($retrieved_nonce, 'deleteAdminDataNonce' ) )
 			{
-				// Get all question types
-				$potRS = ekQuiz_queries::getPots();
-				foreach ($potRS as $potInfo)
+				
+				// Get editors and admin users
+				
+				
+				
+				
+				$deleteUsersArray = array();
+				
+				// get the admins
+				$adminUsers = get_users( 'role=administrator' );				
+				foreach ($adminUsers as $userMeta)
 				{
-					$potID = $potInfo->ID;
-					$args = array("potID" => $potID);
-					$questionsRS = ekQuiz_queries::getPotQuestions($args);
-					
-					foreach($questionsRS as $questionInfo)
-					{
-						$questionID = $questionInfo->ID;						
-						update_post_meta( $questionID, 'showCorrectAnswer', $showCorrectAnswer );		
-						
-					}
+					$userID = $userMeta-> ID;
+					$deleteUsersArray[] = $userID;
 				}
-			}			
+				
+				// Get the editors
+				$editorUsers = get_users( 'role=editor' );				
+				foreach ($editorUsers as $userMeta)
+				{
+					$userID = $userMeta-> ID;
+					$deleteUsersArray[] = $userID;
+				}			
+				global $wpdb;
+				global $userResponsesTable;
+				global $quizAttemptsTable;
+								
+				foreach ($deleteUsersArray as $userDeleteID)
+				{
+					$wpdb->delete( $userResponsesTable, array( 'userID' => $userDeleteID ) );					
+					$wpdb->delete( $quizAttemptsTable, array( 'userID' => $userDeleteID ) );					
+				}
+				
+				echo '<div class="notice notice-success is-dismissible"><p>Data Deleted</p></div>';
+				
+			}
+		
+		
+		break;
 			
 			
-			
-			echo '<div class="notice notice-success is-dismissible"><p>Settings Updated</p></div>';
-			
-			
-		} // End of nonce check
-	}// End if grouopsUpload case	
+	} // End of switch
+		
+
 } // End is action
 
 
@@ -142,9 +186,8 @@ echo '<input type="checkbox" id="updateShowCorrectForAll" name="updateShowCorrec
 echo 'Update all existing questions to this setting (cannot be undone!)';
 ?>
 </label>
- 
-</div>
-<div class="ek-content-box">
+
+
 <h2>Minimum level required to edit / view questions:</h2>
 
 <?php
@@ -170,13 +213,42 @@ foreach ($levelArray as $levelMeta)
 
 
 ?>
-</div>
-
-
+<br/>
 <input type="submit" value="Update" name="submit" class="button-primary" />
 <?php
 // Add nonce
 wp_nonce_field('submitForm');    
 ?>
+</div>
+
+
+
 
 </form>
+
+
+<div class="ek-content-box">
+<h2>Clear up data</h2>
+Remove question data and quiz data submitted by <strong>editors</strong> and <strong>admins</strong><br/>
+<a class="button-secondary" id="deleteAdminDataCheck">Remove Data</a>
+<div id="confirmAdminDataDelete" style="display:none;">
+
+<form action="edit.php?post_type=ek_pot&page=ek-quiz-settings&action=deleteAdminData" method="post">
+<br/>Are you sure you want to delete this data? This cannot be undone!
+<br/>
+<input type="submit" class="button-primary" value="Yes delete this data">
+<?php
+wp_nonce_field('deleteAdminDataNonce');    
+
+?>
+</form>
+</div>
+</div>
+
+<script>
+jQuery( document ).ready(function() {   
+	jQuery( "#deleteAdminDataCheck" ).click(function() {
+		jQuery( "#confirmAdminDataDelete" ).toggle( "fast");
+	});    
+});
+</script>

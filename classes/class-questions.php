@@ -462,7 +462,22 @@ class ekQuestions_CPT
 				// Get the parent ID i.e the pot ID
 				$parentPotID = wp_get_post_parent_id($post_ID);
 				//echo '<a href="">Results</a>';
-				echo '<a href="options.php?page=ek-question-results&questionID='.$post_ID.'&potID='.$parentPotID.'"><i class="fas fa-chart-pie"></i> Results</a>';
+				
+				// Get the total number of responses
+				$questionResults = ekQuiz_queries::getQuestionResults($post_ID);
+				
+				$submissionCount = count($questionResults);
+								
+				if($submissionCount>=1)
+				{
+					echo '<a href="options.php?page=ek-question-results&questionID='.$post_ID.'&potID='.$parentPotID.'">';
+					echo '<i class="fas fa-chart-pie"></i> '.$submissionCount.' Results</a>';
+				}
+				else
+				{
+					echo 'No results';
+				}
+				
 
 			
 			break;
