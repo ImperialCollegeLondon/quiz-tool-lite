@@ -128,8 +128,6 @@ class ek_multiBlanks
 		$blankCount =  substr_count($tempQuestionString, '[blank]'); // Count the number of blanks
 		$i = 1;
 
-      echo 'blankCount ='.$blankCount.'<br/>';
-
 		while (strpos($tempQuestionString, '[blank]') !== false)
 		{
 			$tempQuestionString = preg_replace('/\[blank\]/', '[replace-me-'.$i++.']', $tempQuestionString, 1);
