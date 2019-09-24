@@ -1,15 +1,15 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) 
+if ( ! defined( 'ABSPATH' ) )
 {
 	die();	// Exit if accessed directly
 }
 
-// Only let them view if admin		
+// Only let them view if admin
 	if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
 {
 	die();
-}	
+}
 
 $questionID = $_GET['questionID'];
 $parentID = $_GET['potID'];
@@ -19,11 +19,21 @@ if(!$questionID)
 {
 	echo 'No Question ID found';
 	return;
-}	
+}
 
 $questionTitle = get_the_title($questionID);
 
 $qType = get_post_meta($questionID, "qType", true);
+
+$resultsType='score';
+$thisClass = 'ek_'.$qType;
+
+$qMeta = $thisClass::questionMeta();
+
+if(isset($qMeta['resultsType']) )
+{
+   $resultsType =  $qMeta['resultsType'];
+}
 
 
 
@@ -41,32 +51,32 @@ $totalAttemptsCorrect = 0;
 echo '<h1>'.$questionTitle.'</h1>';
 echo '<a href="edit.php?post_type=ek_question&potID='.$parentID.'">'.ekQuizDraw::backIcon().'Return to '.$potName.' questions</a>';
 
-if($qType=="reflectiveText")
+if($resultsType=="text")
 {
 	echo '<h2>Latest Student Entries</h2>';
-	
+
 
 	foreach($questionResults as $resultMeta)
 	{
-		$userID = $resultMeta['userID'];	
+		$userID = $resultMeta['userID'];
 		$dateSubmitted = $resultMeta['dateSubmitted'];
-		$response = $resultMeta['userResponse'];	
+		$response = $resultMeta['userResponse'];
 
 		$resultsLookupArray[$userID][] = array(
 			"response" => $response,
 			"dateSubmitted" => $dateSubmitted,
 		);
-	}	
-	
-	
-	
+	}
+
+
+
 	// Set Some Defaults
 	$lastDate = '-';
-	
+
 	echo '<table id="userTable">';
 	echo '<thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Response</th><th>Last Attempt Date</th></tr></thead>';
-	
-	
+
+
 	// now go through all users and add to table, along with how many times they've done the question etc
 	foreach ( $userArray as $userID => $userInfo )
 	{
@@ -75,40 +85,40 @@ if($qType=="reflectiveText")
 		$surname = $userInfo['surname'];
 		$username = $userInfo['username'];
 		$role = $userInfo['role'];
-		
+
 		$response = '';
 
 
-		
+
 		if(isset($resultsLookupArray[$userID] ) )
 		{
 
 			$userAttempts = $resultsLookupArray[$userID];
 
 			$lastEntry = end($userAttempts);
-			
+
 			$lastDate = $lastEntry['dateSubmitted'];
 			$response = $lastEntry['response'];
 			$response =  wpautop(ekQuiz_utils::formatResponse($response));
-			
-	
-	
-		}			
-		
+
+
+
+		}
+
 		echo '<tr>';
 		echo '<td>'.$fullname.'</td>';
-		echo '<td>'.$username.'</td>';	
+		echo '<td>'.$username.'</td>';
 		echo '<td>'.$role.'</td>';
 		echo '<td>'.$response.'</td>';
 		echo '<td>'.$lastDate.'</td>';
-		
-		echo '</tr>';		
-		
-		
-		
+
+		echo '</tr>';
+
+
+
 	}
-	
-	
+
+
 }
 
 else
@@ -121,10 +131,10 @@ else
 
 	foreach($questionResults as $resultMeta)
 	{
-		$userID = $resultMeta['userID'];	
+		$userID = $resultMeta['userID'];
 		$gotItCorrect = $resultMeta['gotItCorrect'];
-		
-		
+
+
 		if($gotItCorrect==1)
 		{
 			$totalAttemptsCorrect++;
@@ -159,20 +169,20 @@ else
 		$surname = $userInfo['surname'];
 		$username = $userInfo['username'];
 		$role = $userInfo['role'];
-		
+
 		// get the user attempts
 		$attemptCount = 0;
 		$correctCount = "-";
 		$lastDate = '-';
 		if(isset($resultsLookupArray[$userID] ) )
 		{
-			$userAttempts = $resultsLookupArray[$userID];		
-			$attemptCount = count($userAttempts);
-			
-			
 			$userAttempts = $resultsLookupArray[$userID];
-			
-			
+			$attemptCount = count($userAttempts);
+
+
+			$userAttempts = $resultsLookupArray[$userID];
+
+
 			$correctCount = 0;
 			foreach($userAttempts as $attemptMeta)
 			{
@@ -184,16 +194,16 @@ else
 				}
 			}
 		}
-		
+
 
 		echo '<tr>';
 		echo '<td>'.$fullname.'</td>';
-		echo '<td>'.$username.'</td>';	
+		echo '<td>'.$username.'</td>';
 		echo '<td>'.$role.'</td>';
 		echo '<td>'.$correctCount.'</td>';
-		echo '<td>'.$attemptCount.'</td>';	
+		echo '<td>'.$attemptCount.'</td>';
 		echo '<td>'.$lastDate.'</td>';
-		
+
 		echo '</tr>';
 
 	}
@@ -204,7 +214,7 @@ else
 ?>
 
 <script>
-	jQuery(document).ready(function(){	
+	jQuery(document).ready(function(){
 		if (jQuery('#userTable').length>0)
 		{
 			jQuery('#userTable').dataTable({
@@ -215,6 +225,6 @@ else
 				"order": [[2, "desc"]]
 			});
 		}
-		
+
 	});
-</script>	
+</script>
