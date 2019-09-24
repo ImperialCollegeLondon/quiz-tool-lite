@@ -177,8 +177,14 @@ class ekQuiz_export
 				if(in_array($qType, $responseArrayTypes) )
 				{
 					
-					// Unserialise and go through the array
-					$responseOptions = unserialize($questionMeta['responseOptions'][0]);
+					$responseOptions = array();
+					
+					if(isset($questionMeta['responseOptions']) )
+					{
+					
+						// Unserialise and go through the array
+						$responseOptions = unserialize($questionMeta['responseOptions'][0]);
+					}
 					
 
 					

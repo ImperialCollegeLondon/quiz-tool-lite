@@ -18,6 +18,17 @@ class ek_quiz_actions
 			)
 		));
 	}
+	
+	
+	public static function deleteAllUserData()
+	{
+		global $wpdb;
+		global $userResponsesTable;
+		global $quizAttemptsTable;
+				
+		$delete = $wpdb->query("TRUNCATE TABLE $userResponsesTable");
+		$delete = $wpdb->query("TRUNCATE TABLE $quizAttemptsTable");
+	}
 }
 
 
