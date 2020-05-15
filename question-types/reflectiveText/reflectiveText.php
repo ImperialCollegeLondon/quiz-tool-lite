@@ -135,7 +135,7 @@ class ek_reflectiveText
 		$qStr.='<div id="reflectionFeedback_'.$questionID.'-'.$randomKey.'" class="reflectionSavedFeebdack">Entry Saved</div>';
 
 		$qStr.='<div class="ekQuizButtonWrap" id="ekQuizButtonWrap_'.$questionID.'_'.$randomKey.'">';
-		$qStr.='<input type="button" value="'.$buttonText.'" class="ekQuizButton" onclick="javascript:singleQuestionSubmit(\''.$passData.'\')";/>';
+		$qStr.='<input type="button" id="ekQuizButton_'.$questionID.'_'.$randomKey.'" name="submitButton_'.$questionID.'" value="'.$buttonText.'" class="ekQuizButton" onclick="javascript:singleQuestionSubmit(\''.$passData.'\')";/>';
 		$qStr.='</div>';
 
 		// Hide the Visual Tab
