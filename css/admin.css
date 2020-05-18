@@ -4,7 +4,7 @@
 {
 	border:1px solid #ccc;
 	box-shadow: 3px 3px 5px 1px #888888;
-	
+
 }
 .qTypeChooserBox
 {
@@ -50,7 +50,7 @@ h2.qTypeChooseHeader
 {
 	font-family: "Font Awesome 5 Free";
 	padding-right:7px;
-	content: "\f1b2"; 
+	content: "\f1b2";
 	font-size:20px;
 	font-weight:900;
 }
@@ -62,9 +62,9 @@ h2.qTypeChooseHeader
 }
 .type-ek_quiz td a.row-title:before
 {
-	font-family: "Font Awesome 5 Free";	
+	font-family: "Font Awesome 5 Free";
 	padding-right:7px;
-	content: "\f1b3"; 
+	content: "\f1b3";
 	font-size:25px;
 }
 /*
@@ -78,15 +78,15 @@ li#menu-posts-ek_pot .current {
 }
 .quizOptionsBox h3
 {
-	
+
 }
 #quiztable table
 {
 	padding:5px !important;
-	padding-left:0px !important;	
+	padding-left:0px !important;
 	margin:0px !important;
 	width:90% !important;
-	
+
 }
 #quiztable th
 {
@@ -104,7 +104,7 @@ li#menu-posts-ek_pot .current {
 /* Boundary Stuff */
 #boundaryGraphWrapper
 {
-	
+
 }
 #boundaryGraphWrapper > *
 {
@@ -114,7 +114,7 @@ li#menu-posts-ek_pot .current {
 /* Tooltips */
 a.tooltip {outline:none; }
 a.tooltip strong {line-height:30px;}
-a.tooltip:hover {text-decoration:none;} 
+a.tooltip:hover {text-decoration:none;}
 a.tooltip span {
     z-index:10;display:none; padding:14px 20px;
     margin-top:60px; margin-left:2px;
@@ -124,10 +124,23 @@ a.tooltip:hover span{
     display:inline; position:absolute; color:#111;
     border:1px solid #ccc; background:#f1f1f1;}
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
-    
+
 /*CSS3 extras*/
 a.tooltip span
 {
     border-radius:4px;
     box-shadow: 5px 5px 8px #CCC;
+}
+
+
+/* Showing shortcodes / code */
+.ek-code
+{
+    padding:10px;
+    background:#f7f7f7;
+    border:1px solid #ccc;
+    font-size:12px;
+    margin:5px 10px 5px 0px;
+    padding-right:10px;
+    font-family: "Lucida Console", Courier, monospace;
 }
