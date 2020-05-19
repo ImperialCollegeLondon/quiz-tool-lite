@@ -213,42 +213,6 @@ Insert question ID 25 and change the default correct feedback
 
 
 
-<div id="iconsets" style="display:none">
-<h3>Available Iconsets</h3>
-<?php
-
-
-$iconArray = array();
-$iconArray = qtl_utils::getQTL_IconArray();
-
-
-$correctIconDir = QTL_PLUGIN_URL.'/images/icons/correct/';
-$incorrectIconDir = QTL_PLUGIN_URL.'/images/icons/incorrect/';
-echo '<table>';
-$i=1;
-foreach($iconArray as $myIcon)
-{
-	$currentIconNo = substr($myIcon, 4, -4);
-	$correctIconRef = $correctIconDir.'/'.$myIcon;
-	$incorrectIconRef = $incorrectIconDir.'/cross'.$currentIconNo.'.png';
-	if($i==1){echo '<tr>';}
-	echo '<td align="center" style="padding:25px">';
-	echo '<img src="'.$correctIconRef.'">';
-	echo '<img src="'.$incorrectIconRef.'"><br/>';
-	echo 'Iconset '.$currentIconNo;
-	if($currentIconNo==1){echo ' (Default)';}
-	echo '</td>';
-	$i++;
-	if($i>=5){$i=1; echo '</tr>';}
-}
-if($i<>1){echo '</tr>';}
-echo '</table>';
-?>
-
-
-</div>
-
-
 <a name="showResponse"></a><br />
 <br /><span class="smallText greyLink"><a href="#menu">Back to menu</a></span>
 
