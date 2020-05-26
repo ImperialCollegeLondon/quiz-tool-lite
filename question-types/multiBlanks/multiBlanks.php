@@ -26,6 +26,7 @@ class ek_multiBlanks
 		$userResponse='';
 		$ek_multiBlanks = new ek_multiBlanks();
 
+
 		// Get Current user ID
 		$currentUserID = get_current_user_id();
 
@@ -141,31 +142,6 @@ class ek_multiBlanks
 		$i=1;
 		while($i<=$blankCount)
 		{
-
-			// Turn the possible answers into an array
-			//$tempBlankCorrectArray = explode(",", ${'answers'.$i});
-			//$correctBlankResponsesArray[$i] = $tempBlankCorrectArray;
-
-			// Trim all whuitepsaces before and after
-			//$tempBlankCorrectArray = array_map('trim', $tempBlankCorrectArray);
-
-			// Get the submitted value of this box
-			//$thisSubmittedValue = trim(strtolower($response[$i-1]));
-			//$myBlankResponseArray[] = $thisSubmittedValue;
-
-			// Check if its right and colour the boxes acoordingly
-			/*
-			if (in_array($thisSubmittedValue, $tempBlankCorrectArray))
-			{
-				$thisBoxClass = "correctFeedbackDiv";
-			}
-			else
-			{
-				$thisBoxClass = "incorrectFeedbackDiv";
-			}
-
-			print_r($
-								*/
 			// Replace the Blank with textbox
 
 			$thisReplacement = '[replace-me-'.$i.']';
@@ -177,37 +153,13 @@ class ek_multiBlanks
 				$thisClass = $userResponseClassLookup[$i-1];
 			}
 
-
 			//echo 'look to replace '.$thisReplacement.'<br/>';
 			$tempQuestionString = str_replace($thisReplacement, '<input type="text" size="10" class="'.$thisClass.'" value = "'.$userResponseArray[$i-1].'" name="multiBlankInput_'.$questionID.'-'.$randomKey.'" id="blank_'.$questionID.'_'.$i.'" >', $tempQuestionString);
 			$i++;
 		}
 
-		//$qStr.= str_replace('[blank]', '<input type="text" value="" size="10">', $tempQuestionString);
 
 		$qStr.=$tempQuestionString;
-
-
-
-		/*
-		$qStr.='<input type="text" name="qResponse_'.$questionID.'_'.$randomKey.'" ';
-		$qStr.='id="qResponse_'.$questionID.'_'.$randomKey.'" value="'.$userResponse.'"';
-		if($readOnly==true)
-		{
-			$qStr.= 'readOnly='.$readOnly;
-			// Also add the correct / incorrect class if answers
-			if($gotItCorrect==1)
-			{
-				$qStr.=' class="correctLI"';
-			}
-			else
-			{
-				$qStr.=' class="incorrectLI"';
-			}
-		}
-
-		$qStr.='/>';
-		*/
 
 
 
@@ -247,7 +199,7 @@ class ek_multiBlanks
 
 
 
-			$gotItCorrect = true; /* Correct be default then go through the answers and mark incorrect if any wrong */
+			$gotItCorrect = false; /* Correct be default then go through the answers and mark incorrect if any wrong */
 
 			$i=0;
 
@@ -296,6 +248,8 @@ class ek_multiBlanks
 					{
 						$thisBlankFeedbackDiv.=ekQuizDraw::drawFeedbackIcon(true, 1);
 						$thisBlankFeedbackText='Correct';
+                        $gotItCorrect=true;
+
 					}
 
 
@@ -325,14 +279,17 @@ class ek_multiBlanks
 					$i++;
 
 				}
+
+                $qStr.='</div>';
 			}
 
 			// Show the feedback
 			$qStr.=ekQuizDraw::drawQuestionFeedback($questionID, $gotItCorrect);
+            $qStr.='</div>';
+
 
 		}
 
-		// Close the Question div wrap
 		$qStr.='</div>';
 
 		return $qStr;
@@ -351,37 +308,7 @@ class ek_multiBlanks
 		$caseSensitive = get_post_meta($questionID, "caseSensitive", true);
 
 
-
-		/*
-		//Convert to array for checking later
-		foreach($responseOptions as $thisValue)
-		{
-			$correctAnswerArray[] = $thisValue['optionValue'];
-		}
-
-		$gotItCorrect='';
-		if($userResponse)
-		{
-			$checkResponse = $userResponse;
-			if($caseSensitive<>"on")
-			{
-				// Lowercase the response for checking
-				$checkResponse = strtolower($checkResponse);
-				$correctAnswerArray = array_map('strtolower', $correctAnswerArray);
-
-			}
-
-			if(in_array($checkResponse, $correctAnswerArray))
-			{
-				$gotItCorrect=1;
-			}
-		}
-
-		*/
-
-
-
-		$gotItCorrect = true; // By default got it correct
+		$gotItCorrect = false; // By default got it correct
 		$i=0;
 		foreach($responseOptions as $thisValue)
 		{
@@ -392,11 +319,13 @@ class ek_multiBlanks
 			$userResponseClassLookup[$i] = "";
 			if($userResponse)
 			{
-				$thisUserResponse = '';
-				if(isset($userResponse[$i]) )
+                // Split the responses into an array
+                $thisUserResponseArray = explode (",", $userResponse);
+				if(isset($thisUserResponseArray[$i]) )
 				{
-					$thisUserResponse = $userResponse[$i];
+					$thisUserResponse = $thisUserResponseArray[$i];
 				}
+
 				$thisCorrectAnswerArray = $correctAnswerArray[$i];
 				if($caseSensitive<>"on")
 				{
@@ -420,5 +349,121 @@ class ek_multiBlanks
 		return $gotItCorrect;
 
 	}
+
+    public static function custom_metabox()
+    {
+
+        $qType = self::$qType;
+        global $post;
+
+
+        // do not show this metabo if post is not saved
+        if($post->post_status !== 'publish')
+        {
+                return;
+        }
+
+
+
+
+        // Check for problems and show problems if there are any
+        $questionID = $post->ID;
+        $errorArray = self::check_for_problems($questionID);
+        $errorCount = count($errorArray);
+        if($errorCount==0)
+        {
+            return;
+        }
+
+
+
+
+        // Response Options
+        $id 			= 'check_for_problems';
+        $title 			= "Problems Found!";
+        $drawCallback 	= array( "ek_".$qType, 'drawCustomMetabox' );
+        $screen 		= 'ek_question';
+        $context 		= 'side';
+        $priority 		= 'high';
+        $callbackArgs 	= array(
+        "errorArray"	=> $errorArray,
+        );
+
+
+        add_meta_box(
+            $id,
+            $title,
+            $drawCallback,
+            $screen,
+            $context,
+            $priority,
+            $callbackArgs
+
+        );
+    }
+
+    public static function drawCustomMetabox ( $post, $callbackArgs )
+    {
+        echo '<div class="ek_question_check_error">There are possible problems with this question!</div>';
+        echo '<div class="ek_question_check_error_list">';
+
+        $i=1;
+        foreach ($callbackArgs['args']['errorArray'] as $thisError)
+        {
+            echo '<strong>Problem '.$i.'. </strong><br/> '.$thisError.'<br/>';
+            $i++;
+        }
+
+        echo '</div>';
+
+
+    }
+
+    public static function check_for_problems($questionID)
+    {
+
+        global $post;
+        $errorArray = array();
+
+        $questionID = $post->ID;
+
+        $responsesCount = 0;
+        $responseOptions = get_post_meta($questionID, "responseOptions", true);
+
+        // Get the totla number or blanks
+        if(is_array($responseOptions) )
+        {
+            $responsesCount = count($responseOptions);
+        }
+
+
+
+        if($responsesCount==0)
+        {
+            $errorArray[] = "There are no answers assoicated with this question.";
+        }
+
+
+
+        $page_object = get_page( $questionID );
+        $tempQuestionString =  $page_object->post_content;
+
+        $blankCount =  substr_count($tempQuestionString, '[blank]'); // Count the number of blanks
+
+
+        if($blankCount==0)
+        {
+            $errorArray[] = "There are no blanks in the question.";
+        }
+
+        if($blankCount<>$responsesCount)
+        {
+            $errorArray[] = "You have a different number of blanks(".$blankCount.") than responses. (".$responsesCount.")";
+        }
+
+
+
+        return $errorArray;
+    }
 }
 ?>

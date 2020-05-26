@@ -144,3 +144,19 @@ a.tooltip span
     padding-right:10px;
     font-family: "Lucida Console", Courier, monospace;
 }
+
+
+.ek_question_check_error
+{
+    background:#fff4f0;
+    color:#782000;
+    padding:10px;
+    font-weight: bold;
+    margin-bottom:10px;
+}
+
+.ek_question_check_error_list
+{
+    color:#782000;
+
+}

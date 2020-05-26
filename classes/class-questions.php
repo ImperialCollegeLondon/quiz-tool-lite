@@ -29,7 +29,7 @@ class ekQuestions_CPT
 		add_action('admin_menu', array( $this, 'create_qTypeSelectPage') );
 
 		// Save additional  meta for the custom post
-		add_action( 'save_post', array($this, 'savePostMeta' ), 10 );
+		add_action( 'save_post_ek_question', array($this, 'savePostMeta' ), 10 );
 
 		// Add metaboxes
 		add_action( 'add_meta_boxes_ek_question', array( $this, 'addMetaBoxes' ));
@@ -162,142 +162,147 @@ class ekQuestions_CPT
 	function  addMetaBoxes()
 	{
 
-		global $post;
+        global $post;
 
-		// Get the qType and show relvent meta boxes
-		$qType = "";
-		if(isset($_GET['qType']))
-		{
-			$qType=$_GET['qType'];
-		}
-		else
-		{
-			$qType = get_post_meta ( $post->ID, 'qType', true);
-		}
-
-
-      $defaultQ_types = ekQuiz::getQuestionTypesArray();
+        // Get the qType and show relvent meta boxes
+        $qType = "";
+        if(isset($_GET['qType']))
+        {
+        	$qType=$_GET['qType'];
+        }
+        else
+        {
+        	$qType = get_post_meta ( $post->ID, 'qType', true);
+        }
 
 
-      $hide_default_metabox = false;
+        $defaultQ_types = ekQuiz::getQuestionTypesArray();
 
 
-      if(isset($defaultQ_types[$qType]['hide_default_metabox']))
-      {
-         $hide_default_metabox = $defaultQ_types[$qType]['hide_default_metabox'];
-      }
-
-      if($hide_default_metabox==true )
-      {
-
-         return;
-      }
-
-		//Questino Meta Metabox
-		$id 			= 'question_meta';
-		$title 			= 'Question Shortcode';
-		$drawCallback 	= array( $this, 'drawMetaBox' );
-		$screen 		= 'ek_question';
-		$context 		= 'side';
-		$priority 		= 'default';
-		$callbackArgs 	= array();
-
-		add_meta_box(
-			$id,
-			$title,
-			$drawCallback,
-			$screen,
-			$context,
-			$priority,
-			$callbackArgs
-		);
+        $hide_default_metabox = false;
 
 
+        if(isset($defaultQ_types[$qType]['hide_default_metabox']))
+        {
+            $hide_default_metabox = $defaultQ_types[$qType]['hide_default_metabox'];
+        }
+
+        if($hide_default_metabox==true )
+        {
+
+            return;
+        }
+
+        //Questino Meta Metabox
+        $id 			= 'question_meta';
+        $title 			= 'Question Shortcode';
+        $drawCallback 	= array( $this, 'drawMetaBox' );
+        $screen 		= 'ek_question';
+        $context 		= 'side';
+        $priority 		= 'default';
+        $callbackArgs 	= array();
+
+        add_meta_box(
+        $id,
+        $title,
+        $drawCallback,
+        $screen,
+        $context,
+        $priority,
+        $callbackArgs
+        );
 
 
-
-		//Correct / incorrect feedback
-		$id 			= 'question_feedback';
-		$title 			= 'Question Feedback';
-		$drawCallback 	= array( $this, 'drawFeedbackMetaBox' );
-		$screen 		= 'ek_question';
-		$context 		= 'normal';
-		$priority 		= 'default';
-		$callbackArgs 	= array(
-			"qType"	=> $qType,
-		);
-		add_meta_box(
-			$id,
-			$title,
-			$drawCallback,
-			$screen,
-			$context,
-			$priority,
-			$callbackArgs
-		);
-
-
-		// Only show this box if its single or multiple responseMeta
+        //Correct / incorrect feedback
+        $id 			= 'question_feedback';
+        $title 			= 'Question Feedback';
+        $drawCallback 	= array( $this, 'drawFeedbackMetaBox' );
+        $screen 		= 'ek_question';
+        $context 		= 'normal';
+        $priority 		= 'default';
+        $callbackArgs 	= array(
+        "qType"	=> $qType,
+        );
+        add_meta_box(
+        $id,
+        $title,
+        $drawCallback,
+        $screen,
+        $context,
+        $priority,
+        $callbackArgs
+        );
 
 
-		$responseTypeArray = array ("singleResponse", "multiResponse", "shortTextResponse", "multiBlanks");
+        // Only show this box if its single or multiple responseMeta
+        $responseTypeArray = array ("singleResponse", "multiResponse", "shortTextResponse", "multiBlanks");
 
-		if(in_array($qType, $responseTypeArray))
-		{
+        if(in_array($qType, $responseTypeArray))
+        {
 
 
-			// Question Feedback Behaviour
-			$id 			= 'question_behaviour';
-			$title 			= 'Question Behavior';
-			$drawCallback 	= array( $this, 'drawBehaviourMetaBox' );
-			$screen 		= 'ek_question';
-			$context 		= 'side';
-			$priority 		= 'default';
-			$callbackArgs 	= array(
-				"qType"	=> $qType,
-			);
-			add_meta_box(
-				$id,
-				$title,
-				$drawCallback,
-				$screen,
-				$context,
-				$priority,
-				$callbackArgs
-			);
+            // Question Feedback Behaviour
+            $id 			= 'question_behaviour';
+            $title 			= 'Question Behavior';
+            $drawCallback 	= array( $this, 'drawBehaviourMetaBox' );
+            $screen 		= 'ek_question';
+            $context 		= 'side';
+            $priority 		= 'default';
+            $callbackArgs 	= array(
+            	"qType"	=> $qType,
+            );
+            add_meta_box(
+            	$id,
+            	$title,
+            	$drawCallback,
+            	$screen,
+            	$context,
+            	$priority,
+            	$callbackArgs
+            );
 
 
 
-			$metaBoxTitle = "Response options";
+            $metaBoxTitle = "Response options";
 
-			//$textTypeAnswers = array("shortTextResponse", "multiBlanks");
-			if(ekQuiz_utils::isTextBasedAnswer($qType)==true)
-			{
-				$metaBoxTitle = "Possible Answers";
-			}
+            //$textTypeAnswers = array("shortTextResponse", "multiBlanks");
+            if(ekQuiz_utils::isTextBasedAnswer($qType)==true)
+            {
+            	$metaBoxTitle = "Possible Answers";
+            }
 
 
-			// Response Options
-			$id 			= 'response_options';
-			$title 			= $metaBoxTitle;
-			$drawCallback 	= array( $this, 'drawResponseOptionEditBox' );
-			$screen 		= 'ek_question';
-			$context 		= 'normal';
-			$priority 		= 'high';
-			$callbackArgs 	= array(
-				"qType"	=> $qType,
-			);
+            // Response Options
+            $id 			= 'response_options';
+            $title 			= $metaBoxTitle;
+            $drawCallback 	= array( $this, 'drawResponseOptionEditBox' );
+            $screen 		= 'ek_question';
+            $context 		= 'normal';
+            $priority 		= 'high';
+            $callbackArgs 	= array(
+            	"qType"	=> $qType,
+            );
 
-			add_meta_box(
-				$id,
-				$title,
-				$drawCallback,
-				$screen,
-				$context,
-				$priority,
-				$callbackArgs
-			);
-		}
+            add_meta_box(
+            	$id,
+            	$title,
+            	$drawCallback,
+            	$screen,
+            	$context,
+            	$priority,
+            	$callbackArgs
+            );
+        }
+
+        // Check for custom metaboxes
+        // Check if method exist
+        $qClass = 'ek_'.$qType;
+
+        if(method_exists($qClass, 'custom_metabox') )
+        {
+            $qClass::custom_metabox();
+        }
+
 	}
 
 	function drawBehaviourMetaBox($post, $callbackArgs)
@@ -404,8 +409,6 @@ class ekQuestions_CPT
 		if($qType=="reflectiveText")
 		{
 
-
-
 			$addTextarea = get_post_meta ( $post->ID, 'addTextarea', true);
 
 			global $pagenow;
@@ -414,8 +417,6 @@ class ekQuestions_CPT
 			{
 	   			$addTextarea = "on";
 			}
-
-
 
 
 			echo '<hr/><label for="addTextarea">';
@@ -911,8 +912,11 @@ class ekQuestions_CPT
 	{
 		global $post_type;
 
+
 		if($post_type=="ek_question")
-		{
+        {
+
+
 
 			// Check if nonce is set.
 			if ( ! isset( $_POST['ek_question_metabox_nonce'] ) ) {
@@ -938,6 +942,7 @@ class ekQuestions_CPT
 			if ( is_multisite() && ms_is_switched() ) {
 				return $post_id;
 			}
+
 			// Gett the pot ID (parent) and set it as the parent ID
 			$potID = wp_get_post_parent_id( $postID );
 
@@ -954,6 +959,8 @@ class ekQuestions_CPT
 
 			// Store thte Question Type - default to free text if for any reason its not been set yet
 			$qType 	= isset( $_POST['qType'] ) 	?  	$_POST['qType']  : 'reflectiveText';
+
+
 			update_post_meta( $postID, 'qType', $qType );
 			// Save the Correct and incorrect feedback
 			$correctFeedback 	= isset( $_POST['correctFeedback'] ) 	?  		$_POST['correctFeedback']  		: '';
@@ -992,7 +999,7 @@ class ekQuestions_CPT
 				$responseMeta['feedbackIfSelected'] = $feedbackIfSelected;
 				$responseMeta['feedbackIfNotSelected'] = $feedbackIfNotSelected;
 
-				echo $i.'= '.htmlentities(stripslashes($option_values[ $i ])).'<br/>';
+				//echo $i.'= '.htmlentities(stripslashes($option_values[ $i ])).'<br/>';
 
 
 

@@ -1,4 +1,5 @@
 <?php
+
 $ekQuiz = new ekQuiz();
 class ekQuiz
 {

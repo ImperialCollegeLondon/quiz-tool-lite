@@ -110,7 +110,7 @@ class ek_quizAjax
             $quizName = get_the_title($quizID);
 
 
-            $subject = 'New participant has takken the quiz : '.$quizName;
+            $subject = 'New participant has taken the quiz : '.$quizName;
             $body = 'A new person has taken the quiz "'.$quizName.'". <a href="'.$siteURL.'/wp-admin/options.php?page=ek-quiz-results&quizID='.$quizID.'">Click here to view the partipant list</a>';
             $headers = array('Content-Type: text/html; charset=UTF-8');
 

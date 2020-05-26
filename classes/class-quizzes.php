@@ -1115,7 +1115,7 @@ class ekQuizzes_CPT
 					$days = floor($timeLeft / 86400);
 
 					$accessCheck[0] = false;
-					$accessCheck[1] = 'You can next take this test in <b>'.$min.' minutes, '.$hours.' hours and '.$days.' days</b>';
+					$accessCheck[1] = 'You can next take this test in <b>'.$days.' day(s),  '.$hours.' hours and '.$min.' minutes</b>';
 					return $accessCheck;
 
 				}
