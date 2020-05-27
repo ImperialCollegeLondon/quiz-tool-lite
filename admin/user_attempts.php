@@ -1,23 +1,26 @@
 <?php
-	if ( ! defined( 'ABSPATH' ) ) 
+	if ( ! defined( 'ABSPATH' ) )
 	{
 		die();	// Exit if accessed directly
 	}
-	
-	// Only let them view if admin		
+
+	// Only let them view if admin
 	if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
 	{
 		die();
-	}	
-?>
-<?php
+	}
+
+
+    $locale = get_locale();
+    
+
 $userID = $_GET['userID'];
 $quizID = $_GET['quizID'];
 echo '<h1>User Attempts</h1>';
 	echo '<a href="edit.php?post_type=ek_quiz">'.ekQuizDraw::backIcon().'Back to Quizzes</a>';
 echo '<table id="attemptsTable">';
 echo '<thead><tr><th>Score</th><th>Time Taken(HIDDEN)</th><th>Time Taken</th><th>Date Started(HIDDEN)</th><th>Date Started</th><th>Date Finished</th><th>Results</th></tr></thead>';
-	
+
 $ekQuiz_queries = new ekQuiz_queries();
 $quizAttempts = $ekQuiz_queries->getUserAttempts($quizID, $userID);
 echo '<pre>';
@@ -36,8 +39,8 @@ foreach ( $quizAttempts as $attemptInfo )
 	{
 		$dateFinishedFormat='-';}else{	$dateFinishedFormat = date('jS F Y, g:ia', strtotime($dateFinished));
 	}
-	
-	
+
+
 	// Get the time taken if finished
 	$timeTaken = '-';
 	$timeTakenSeconds = '-';
@@ -47,22 +50,22 @@ foreach ( $quizAttempts as $attemptInfo )
 		$timeTaken = $timeTakenInfo['str'];
 		$timeTakenSeconds = $timeTakenInfo['seconds'];
 	}
-	
+
 	echo '<tr>';
 	echo '<td><b>'.$score.'</b></td>';
 	echo '<td>'.$timeTakenSeconds.'</td>';
 	echo '<td>'.$timeTaken.'</td>';
-	echo '<td>'.$dateStarted.'</td>';	
+	echo '<td>'.$dateStarted.'</td>';
 	echo '<td>'.$dateStartedFormatted.'</td>';
 	//echo '<td>'.$dateFinished.'</td>';
 	echo '<td>'.$dateFinishedFormat.'</td>';
-	echo '<td><a href="?page=ek-user-attempt&attemptID='.$attemptID.'">View Results</a></td>';		
+	echo '<td><a href="?page=ek-user-attempt&attemptID='.$attemptID.'">View Results</a></td>';
 	echo '</tr>';
-}	
+}
 echo '</table>';
 ?>
 <script>
-	jQuery(document).ready(function(){	
+	jQuery(document).ready(function(){
 		if (jQuery('#attemptsTable').length>0)
 		{
 			jQuery('#attemptsTable').dataTable({
@@ -72,7 +75,7 @@ echo '</table>';
 				"sPaginationType": "full_numbers",
 				"iDisplayLength": 50, // How many numbers by default per page
 				"order": [[ 3, "desc" ]], // Show in date order
-				"columnDefs": [ 
+				"columnDefs": [
 					{// Hide the date finished mysql date
 						"targets": [ 1, 3 ],
 						"visible": false,
@@ -82,20 +85,20 @@ echo '</table>';
 						"orderData":[ 1 ],
 						"targets": [ 2 ] ,
 					},// Order date started by mysqldate (hidden column)
-					{ 
+					{
 						"orderData":[ 3 ],
 						"targets": [ 4 ] ,
 					},
-					{ 
+					{
 						"targets":[ 5, 6 ],
 						"orderable": false,
-					},					
-				
+					},
+
 				],
-				
-				
+
+
 			});
 		}
-		
+
 	});
-</script>	            
+</script>

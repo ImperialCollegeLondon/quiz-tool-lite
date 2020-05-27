@@ -79,10 +79,13 @@ class ek_singleResponse
 
 			// Setup the Array of the option order
 			$optionOrderArray = array();
-			foreach ($originalResponseOptions as $key => $value)
-			{
-				$optionOrderArray[] = $key;
-			}
+            if(is_array($originalResponseOptions) )
+            {
+    			foreach ($originalResponseOptions as $key => $value)
+    			{
+    				$optionOrderArray[] = $key;
+    			}
+            }
 
 
 			// If shuffle is set then shuffle the array but keep keys
@@ -354,24 +357,29 @@ class ek_singleResponse
 		// Get the response options
 		$responseOptions = get_post_meta($questionID, "responseOptions", true);
 
-		$gotItCorrect=false;
-		foreach($responseOptions as $optionID => $responseMeta)
-		{
+        $gotItCorrect=false;
 
-			$isCorrect = '';
-			if(isset($responseMeta['isCorrect']) )
-			{
-				$isCorrect = $responseMeta['isCorrect'];
+        if(is_array($responseOptions) )
+        {
+    		foreach($responseOptions as $optionID => $responseMeta)
+    		{
 
-			}
+    			$isCorrect = '';
+    			if(isset($responseMeta['isCorrect']) )
+    			{
+    				$isCorrect = $responseMeta['isCorrect'];
 
-			if($userResponse==$optionID && $isCorrect==true)
-			{
-				$gotItCorrect=true;
-			}
+    			}
+
+                // Has the user selected this response AND is it correct?
+    			if($userResponse==$optionID && $isCorrect==true)
+    			{
+    				$gotItCorrect=true;
+    			}
 
 
-		}
+    		}
+        }
 
 		return $gotItCorrect;
 

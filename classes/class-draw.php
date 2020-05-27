@@ -511,8 +511,6 @@ class ekQuizDraw
 			{
 				foreach ($thisPageQuestionArray as $KEY => $myQuestionMeta)
 				{
-
-
 					$qType = $myQuestionMeta['qType'];
 					$questionID = $myQuestionMeta['questionID'];
 					$fullPageArray[] = array(
@@ -552,6 +550,7 @@ class ekQuizDraw
 
 
 			$thisUserResponse = "";
+
 			if(isset($userResponses[$questionID])){$thisUserResponse = ekQuiz_utils::processDatabaseTextForTextarea($userResponses[$questionID]);}
 
 

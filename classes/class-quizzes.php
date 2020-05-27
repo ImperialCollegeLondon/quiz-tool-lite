@@ -63,9 +63,6 @@ class ekQuizzes_CPT
 		add_filter( 'page_row_actions', array($this,'custom_quick_links'), 10, 2 );
 
 
-
-
-
 	}
 
 
@@ -364,6 +361,8 @@ class ekQuizzes_CPT
 		 $args = array(
 			'posts_per_page'   => -1,
 			'post_type'        => 'ek_pot',
+            'orderby'             => 'title',
+            'order'             => 'ASC',
 		);
 		$pot_array = get_posts( $args );
 

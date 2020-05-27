@@ -521,10 +521,10 @@ tooltip
 	  color:#2196F3;
   }
 
-  .ek-response input[type="radio"] {
-	  margin-right: 10px;
-      display:none;
 
+  /* Hide the actual response options old inputs*/
+  .ek-response input[type="radio"],  .ek-response input[type="checkbox"] {
+    opacity: 0;
   }
 
   /* RADIO BUTTONS */
