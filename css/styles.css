@@ -31,7 +31,7 @@ ul.ek-responses
 li.ek-response,
 body ul li.ek-response {
     padding: 8px;
-   	margin: 10px 0 0 25px;
+   	margin: 10px 0 10px 25px;
     list-style-type: none;
 }
 
@@ -523,6 +523,7 @@ tooltip
 
   .ek-response input[type="radio"] {
 	  margin-right: 10px;
+      display:none;
 
   }
 
@@ -549,7 +550,6 @@ tooltip
 /* Create a custom radio button */
 .checkmark {
     position: absolute;
-    top: 4px;
     left: 0;
     height: 22px;
     width: 22px;

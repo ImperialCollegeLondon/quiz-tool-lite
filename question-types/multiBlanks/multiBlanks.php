@@ -121,8 +121,8 @@ class ek_multiBlanks
 		{
 			$randomKey = $args['randomKey'];
 		}
-		$qStr.='<div class="multiBlanks">';
-	//	$qStr.='<div class="multiBlanks" id="ek-question-'.$questionID.'-'.$randomKey.'">';
+		//$qStr.='<div class="multiBlanks">';
+		$qStr.='<div class="multiBlanks" id="ek-question-'.$questionID.'-'.$randomKey.'">';
 
 
 		$tempQuestionString= apply_filters('the_content', get_post_field('post_content', $questionID));
@@ -280,7 +280,7 @@ class ek_multiBlanks
 
 				}
 
-                $qStr.='</div>';
+              //  $qStr.='</div>';
 			}
 
 			// Show the feedback
@@ -308,7 +308,7 @@ class ek_multiBlanks
 		$caseSensitive = get_post_meta($questionID, "caseSensitive", true);
 
 
-		$gotItCorrect = false; // By default got it correct
+		$gotItCorrect = true; // By default got it correct
 		$i=0;
 		foreach($responseOptions as $thisValue)
 		{

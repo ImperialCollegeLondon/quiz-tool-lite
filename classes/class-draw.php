@@ -581,10 +581,7 @@ class ekQuizDraw
 			$thisQuestionClass = 'ek_'.$qType;
 
 
-			//die();
-
 			$pageStr.='<div class="ek-question" id="ek-question_'.$questionID.'_'.$qType.'">';
-
 			$pageStr.= $thisQuestionClass::drawQuestion($args);
 			$pageStr.='</div>';
 
@@ -598,7 +595,9 @@ class ekQuizDraw
 					"userResponse"			=> $thisUserResponse,
 
 				);
+
 				$isCorrect= $thisQuestionClass::markQuestion($markArgs);
+
 
 				// TODO ADD WEIGHTING
 				$questionWeighting = 1;
@@ -656,7 +655,7 @@ class ekQuizDraw
 
 			$pageStr=$markedFeedback.$boundaryFeedback.$completionMessage.$pageStr;
 
-			return $pageStr;
+			return $pageStr; // Return now as it's showing theanswers so need for submit buttons
 		}
 
 
