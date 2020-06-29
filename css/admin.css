@@ -160,3 +160,16 @@ a.tooltip span
     color:#782000;
 
 }
+
+
+.ek-feedback
+{
+    padding:5px;
+}
+
+.ek-feedback-warning
+{
+    background:#ffdede;
+    color:#b30202;
+    border:1px solid #b30202;
+}

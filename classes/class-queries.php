@@ -1,9 +1,9 @@
 <?php
 class ekQuiz_queries
 {
-		
+
 	// Get an array of blog users and their role
-	static function getBlogUsers($args=array())
+	public static function getBlogUsers($args=array())
 	{
 
 		$userArray = array();
@@ -42,7 +42,7 @@ class ekQuiz_queries
 	}
 
 
-	static function getPots()
+	public static function getPots()
 	{
 		// Get all the question pots
 		 $args = array(
@@ -58,7 +58,7 @@ class ekQuiz_queries
 	}
 
 
-	static function getPotQuestions($args)
+	public static function getPotQuestions($args)
 	{
 		$returnQcount="";
 		$potID = $args['potID'];
@@ -123,7 +123,7 @@ class ekQuiz_queries
 	}
 
 
-	static function getBoundaryFeedback($percentageScore, $quizID)
+	public static function getBoundaryFeedback($percentageScore, $quizID)
 	{
 		// Get all the boundaries and stick them in an array
 		$gradeBoundaries = get_post_meta($quizID, 'gradeBoundaries', true);
@@ -144,8 +144,25 @@ class ekQuiz_queries
 		return $feedback;
 	}
 
+    public static function getQuizzes()
+    {
+        $args = array(
+			'posts_per_page'   => -1,
+			'order'            => 'ASC',
+			'post_type'        => 'ek_quiz',
+			'post_status'      => 'publish',
+		);
 
-	static public function getQuizResults($quizID)
+
+
+		$posts_array = get_posts( $args );
+		return  $posts_array;
+
+
+    }
+
+
+	public static function getQuizResults($quizID)
 	{
 		global $wpdb;
 		global $quizAttemptsTable;
@@ -158,7 +175,7 @@ class ekQuiz_queries
 
 	}
 
-	static public function getUserAttempts($quizID, $userID)
+	public static function getUserAttempts($quizID, $userID)
 	{
 		global $wpdb;
 		global $quizAttemptsTable;
@@ -167,7 +184,7 @@ class ekQuiz_queries
 		return $rs;
 	}
 
-	static public function getUserResponse($questionID, $userID)
+	public static function getUserResponse($questionID, $userID)
 	{
 		global $wpdb;
 		global $userResponsesTable;
@@ -180,7 +197,7 @@ class ekQuiz_queries
 
 
 	// Gets all submissions for a single question
-	static function getQuestionResults($questionID)
+	public static function getQuestionResults($questionID)
 	{
 		global $wpdb;
 		global $userResponsesTable;
@@ -193,7 +210,7 @@ class ekQuiz_queries
 
 	}
 
-	static function getNewQuestionID_fromLegacy($questionID)
+	public static function getNewQuestionID_fromLegacy($questionID)
 	{
 		global $wpdb;
 		global $legacyLookupTable;
