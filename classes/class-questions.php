@@ -243,7 +243,7 @@ class ekQuestions_CPT
 
             // Question Feedback Behaviour
             $id 			= 'question_behaviour';
-            $title 			= 'Question Behavior';
+            $title 			= 'Single Question Behavior';
             $drawCallback 	= array( $this, 'drawBehaviourMetaBox' );
             $screen 		= 'ek_question';
             $context 		= 'side';

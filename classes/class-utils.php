@@ -386,7 +386,29 @@ if (!class_exists('ekQuiz_utils'))
 		}
 
 
+        // Pass it a question ID and a quiz array and returns the question number in the quiz
+        public static function getCurrentQuestionNumber($questionID, $quizQuestionsArray)
+        {
+            $currentQuestionNumber = 1;
+
+            foreach ($quizQuestionsArray as $pageNo => $questionsOnPage)
+            {
+                foreach ($questionsOnPage as $questionsArray)
+                {
+                    if($questionID==$questionsArray['questionID'])
+                    {
+                        return $currentQuestionNumber;
+                    }
+                    $currentQuestionNumber++;
+                }
+            }
+
+            return;
+        }
+
+
 
 	}// End of class
+
 }// End of if class exists
 ?>

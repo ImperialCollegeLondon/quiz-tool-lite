@@ -37,7 +37,9 @@ class ek_singleResponse
 
 
 
-		foreach($args as $key => $value){$$key = $value;} # Turn all atts into variables of Key name
+		foreach($args as $key => $value){
+            $$key = $value;
+        } # Turn all atts into variables of Key name
 
 
 		$randomKey = '';

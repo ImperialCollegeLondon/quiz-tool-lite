@@ -8,12 +8,18 @@ QUIZ TOOL MAIN STYLES - UPDATED  15.11.18
 {
 	position: relative;
  	padding:20px;
-	background-color: #fbfbfb;
 	border-radius:10px;
 	margin:20px 0px;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-     box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+
+    border:1px solid #ccc;
+
+}
+
+.ek_question_number
+{
+    font-size:22px;
+    border-bottom:1px solid #ccc;
+    padding-bottom:5px;
 }
 
 .ek-question label
@@ -33,6 +39,7 @@ body ul li.ek-response {
     padding: 8px;
    	margin: 10px 0 10px 25px;
     list-style-type: none;
+    padding-left:40px;
 }
 
 .correctLI, input.correctLI, .reflectionFeedback, input[type="text"].correctLI, .reflectionFeedback
@@ -118,12 +125,12 @@ body ul li.ek-response {
 
 
 /* QUIZ Styles */
-.ek-quiz-nav-button
-{
 
-	clear: both;
-    padding-bottom: 30px;
+#ek-quiz-nav
+{
+    display:flex;
 }
+
 
 .ek-quiz-nav-button
 {
@@ -131,7 +138,9 @@ body ul li.ek-response {
 	background:#336699;
 	color:#fff;
 	border:1px solid #003366;
-	border-radius:10px;
+	border-radius:5px;
+    font-size:20px;
+
 }
 
 .ek-quiz-nav-button:hover
@@ -146,11 +155,11 @@ body ul li.ek-response {
 
 #ek-nextpage-button, #ek-endquiz-button
 {
-	float:right;
+	margin-left: auto;
 }
 #ek-prevpage-button
 {
-	float:left;
+
 }
 /* Timer Stuff */
 #quizTimeLimit
@@ -522,16 +531,11 @@ tooltip
   }
 
 
-  /* Hide the actual response options old inputs*/
-  .ek-response input[type="radio"],  .ek-response input[type="checkbox"] {
-    opacity: 0;
-  }
 
-  /* RADIO BUTTONS */
 
-  .responseOptionItem {
+.responseOptionItem {
 
-	display: block;
+  display: block;
     position: relative;
     cursor: pointer;
     -webkit-user-select: none;
@@ -540,53 +544,91 @@ tooltip
     user-select: none;
   }
 
-  /* Hide the browser's default radio button */
-.responseOptionItem input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
+
+  /* Hide the actual response options old inputs*/
+  .ek-response input[type="radio"],  .ek-response input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+  }
+
+  .responseOptionItem input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+  }
+
+
+  /* RADIO BUTTONS */
 
 /* Create a custom radio button */
-.checkmark {
-    position: absolute;
-    left: 0;
-    height: 22px;
-    width: 22px;
-    background-color: #eee;
+/* Hide the browser's default radio button */
+.responseOptionItem input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom radio button and checkbox */
+.responseOptionItem .checkmark, .multiResponseItem .checkmark {
+  position: absolute;
+  top: 5px;
+  left: 30px;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
+
+.responseOptionItem .checkmark
+{
     border-radius: 50%;
 }
+
 /* On mouse-over, add a grey background color */
 .responseOptionItem:hover input ~ .checkmark {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 
 /* When the radio button is checked, add a blue background */
-.responseOptionItem input:checked ~ .checkmark {
-    background-color: #2196F3;
+.responseOptionItem input:checked ~ .checkmark,  .responseOptionItem .selected .checkmark{
+  background-color: #2196F3;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+.responseOptionItem .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the indicator (dot/circle) when checked */
-.responseOptionItem input:checked ~ .checkmark:after {
-    display: block;
+.responseOptionItem input:checked ~ .checkmark:after,   .responseOptionItem .selected .checkmark:after {
+  display: block;
 }
 
 /* Style the indicator (dot/circle) */
 .responseOptionItem .checkmark:after {
- 	top: 7px;
-	left: 7px;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #fff;
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
 }
+
+
+/* The actual border of the question */
+
+.ek-responses li
+{
+    border-bottom:1px solid #ccc;
+}
+
+
 
 
 /************ CHECKBOXES ***************/
@@ -601,49 +643,42 @@ tooltip
     user-select: none;
 }
 
-/* Hide the browser's default checkbox */
 
-.multiResponseItem input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
 
 /* On mouse-over, add a grey background color */
 .multiResponseItem:hover input ~ .checkmark {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 
 /* When the checkbox is checked, add a blue background */
 .multiResponseItem input:checked ~ .checkmark {
-    background-color: #2196F3;
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.multiResponseItem .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the checkmark when checked */
 .multiResponseItem input:checked ~ .checkmark:after {
-    display: block;
+  display: block;
 }
 
 /* Style the checkmark/indicator */
 .multiResponseItem .checkmark:after {
-    left: 7px;
-    top: 3px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-	transform: rotate(45deg);
-	border-radius: 0;
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
-
-.multiResponseItem .checkmark  {
-	border-radius: 0;
-}
-
 
 /**** MULTIBLANK ****/
 

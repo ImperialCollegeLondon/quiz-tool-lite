@@ -374,9 +374,9 @@ class ekQuizDraw
 
 			if($timeLimitInfo)
 			{
-				$qStr.='<hr/>'.$timeLimitInfo;
+				$qStr.='<hr/>'.$timeLimitInfo.'<hr/>';
 			}
-			$qStr.='<hr/><button class="quizStartButton" id="quizID_'.$quizID.'">Start the Quiz</button>';
+			$qStr.='<button class="quizStartButton" id="quizID_'.$quizID.'">Start the Quiz</button>';
 
 		}
 		else
@@ -392,55 +392,38 @@ class ekQuizDraw
 		$qStr.='<div id="quiz-finish-modal" class="ek-quiz-modal">';
 		$qStr.='<div class="ek-quiz-modal-content"><span class="close-modal">&times;</span>';
 		$qStr.='<p>Are you sure you want to finish this quiz?</p>';
-		$qStr.='<br/><button id="quizFinishConfirm" class="ek-quiz-nav-button">Finish the quiz</button>';
+		$qStr.='<br/><button id="quizFinishConfirm" data-id="'.$quizID.'" class="ek-quiz-nav-button">Finish the quiz</button>';
 		$qStr.='</div></div>';
 
 		/* Add the 'finish quiz modal if TIMED */
 		$qStr.='<div id="quiz-timer-finish-modal" class="ek-quiz-modal">';
 		$qStr.='<div class="ek-quiz-modal-content">';
 		$qStr.='<p>Your time is up!</p>';
-		$qStr.='<br/><button id="quizTimerFinishConfirm" class="ek-quiz-nav-button">Submit your answers</button>';
+		$qStr.='<br/><button id="quizTimerFinishConfirm" data-id="'.$quizID.'" class="ek-quiz-nav-button">Submit your answers</button>';
 		$qStr.='</div></div>';
 
 		return $qStr;
 	}
 
-	public static function initaliseQuiz($quizID)
+	public static function initaliseQuiz($quizID, $attemptID)
 	{
 		global $ek_quiz_database;
 		global $ekQuizzes_CPT;
 
 		$quizStr ='';
-		// Generate the question page array
-		$myQuestionArray = $ekQuizzes_CPT->generateQuizQuestionArray($quizID);
 
 
-
-		$userID = get_current_user_id();
-		// Get all previous attempts and up the attempt number_format
-		$previousAttempts = $ek_quiz_database->getAllQuizAttemptsByUser( $quizID, $userID );
-		$attemptCount = count($previousAttempts);
-		$thisAttemptNumber = $attemptCount+1;
-
-		$args = array(
-		"quizID"			 => $quizID,
-		"quizQuestionsArray" => $myQuestionArray,
-		"thisAttemptNumber"	=> $thisAttemptNumber,
-		);
-		// Save this latest attempt and add the attemptID as a session var
-		$attemptID = $ek_quiz_database->saveAttemptInfo($args);
-
-		// Set it as a session to it can't be tampered with
-		$_SESSION['attemptID'] = $attemptID;
 
 		// Now draw the first page of the quiz
 		$args = array(
 			"quizID"			=> $quizID,
 			"currentPage"		=> 1,
+            "attemptID"         => $attemptID,
 		);
 
 		// Returns array of quiz and if answer is correct so get the qStr KEY
 		$quizStr.=self::drawQuizPage($args);
+
 
 		return $quizStr;
 
@@ -477,27 +460,27 @@ class ekQuizDraw
 		$quizID = $args ['quizID'];
 		$currentPage = $args['currentPage'];
 
-		if(isset($_SESSION['attemptID'] ) )
-		{
-			$attemptID = $_SESSION['attemptID'];
-		}
-		else
-		{
-			$attemptID = $args['attemptID'];
-		}
 
-
-
-		if(isset($args['attemptID'])){$attemptID=$args['attemptID'];}
+        if(isset($args['attemptID']))
+        {
+            $attemptID=$args['attemptID'];
+        }
+        else
+        {
+            return 'Error - no attempt ID found';
+        }
 
 		$userID = get_current_user_id();
 		// Get the question order details based on the attemptID
 		$attemptInfo = $ek_quiz_database->getAttemptInfo( $attemptID );
+
 		$quizQuestionsArray = $attemptInfo['questionOrder'];
 		$quizQuestionsArray = unserialize($quizQuestionsArray);
 
 		$userResponses = $attemptInfo['userResponses'];
 		$userResponses = unserialize($userResponses);
+
+
 
 
 		// If the quiz is finished read only is ON
@@ -521,9 +504,6 @@ class ekQuizDraw
 				}
 			}
 
-
-
-
 			$questionsOnPageArray = $fullPageArray;
 
 		}
@@ -539,6 +519,7 @@ class ekQuizDraw
 		$totalWeighting = 0;
 		$totalAvailableWeighting = 0;
 
+
 		foreach ($questionsOnPageArray as $questionInfo)
 		{
 			$questionID = $questionInfo['questionID'];
@@ -553,6 +534,10 @@ class ekQuizDraw
 
 			if(isset($userResponses[$questionID])){$thisUserResponse = ekQuiz_utils::processDatabaseTextForTextarea($userResponses[$questionID]);}
 
+
+            // Get the current question number
+
+            $currentQuestionNumber = ekQuiz_utils::getCurrentQuestionNumber($questionID, $quizQuestionsArray);
 
 
 			$args = array(
@@ -579,8 +564,15 @@ class ekQuizDraw
 			// Get the qType for this question
 			$thisQuestionClass = 'ek_'.$qType;
 
-
 			$pageStr.='<div class="ek-question" id="ek-question_'.$questionID.'_'.$qType.'">';
+
+
+            // Show the currnet question number
+            if($currentQuestionNumber)
+            {
+                $pageStr.='<div class="ek_question_number">Question '.$currentQuestionNumber.'.</div>';
+            }
+
 			$pageStr.= $thisQuestionClass::drawQuestion($args);
 			$pageStr.='</div>';
 
@@ -670,14 +662,14 @@ class ekQuizDraw
 		$pageStr.='<div id="ek-quiz-nav">';
 		if($currentPage<>1)
 		{
-			$pageStr.='<span class="ek-quiz-nav-button" id="ek-prevpage-button">Back</span>';
+			$pageStr.='<span class="ek-quiz-nav-button" id="ek-prevpage-button">Save and Go Back</span>';
 
 		}
 
 		// if its the last page don't show next button
 		if($currentPage <> $pageCount)
 		{
-			$pageStr.='<button class="ek-quiz-nav-button" id="ek-nextpage-button">Save and Continue</button>';
+			$pageStr.='<button class="ek-quiz-nav-button" id="ek-nextpage-button" >Save and Continue</button>';
 		}
 
 		// If its the last page the show the finish button
@@ -875,8 +867,6 @@ class ekQuizDraw
 
 			// Get the results
 			$quizResults = ekQuiz_queries::getQuizResults($quizID);
-
-
 
 			$masterResultsArray = array();
 

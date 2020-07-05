@@ -13,6 +13,10 @@ class ek_quizAjax
 	function addWPActions()
 	{
 
+        add_action( 'wp_ajax_initialise_quiz', array($this, 'initialise_quiz' ));
+        add_action( 'wp_ajax_nopriv_initialise_quiz', array($this, 'initialise_quiz' ));
+
+
 		// Front End
 		add_action( 'wp_ajax_startQuiz', array($this, 'startQuiz' ));
 		add_action( 'wp_ajax_nopriv_startQuiz', array($this, 'startQuiz' ));
@@ -52,13 +56,24 @@ class ek_quizAjax
 		// Check the AJAX nonce
 		check_ajax_referer( 'quiz_page_ajax_nonce', 'security' );
 
+        // Create blank page str
+        $pageStr = '';
 
-		$quizID = $_POST['quizID'];
-		$userID = get_current_user_id();
-		$pageToShow = $_POST['pageToShow'];
-		$userResponses = $_POST['userResponses'];
 
-		$attemptID = $_SESSION['attemptID'];
+
+        //foreach ($_POST as $KEY => $VALUE)
+        //{
+        //    $pageStr.=$KEY.' = '.$VALUE.'<br/>';
+       // }
+
+
+        $quizID = $_POST['quizID'];
+        $attemptID = $_POST['attemptID'];
+        $userID = get_current_user_id();
+        $pageToShow = $_POST['pageToShow'];
+
+
+
 		// Get the existing user responses array from the quiz attempts table
 		$attemptInfo = $ek_quiz_database->getAttemptInfo( $attemptID );
 
@@ -70,15 +85,25 @@ class ek_quizAjax
 			$userResponsesArray = array();
 		}
 
-		// Add the questionIDs as keys to the master user response array
-		foreach($userResponses as $questionID => $thisResponse)
-		{
-			$userResponsesArray[$questionID] = $thisResponse;
-		}
+        // If the user responses don't exist then
+        $userResponses = '';
+        if(isset($_POST['userResponses']) )
+        {
+            $userResponses = $_POST['userResponses'];
+        }
+
+        if(is_array($userResponses) )
+        {
+    		// Add the questionIDs as keys to the master user response array
+    		foreach($userResponses as $questionID => $thisResponse)
+    		{
+    			$userResponsesArray[$questionID] = $thisResponse;
+    		}
+        }
 
 
 		// Save the new array
-		$ek_quiz_database->savePageResponses($attemptID, $userResponsesArray);
+		$pageStr.= $ek_quiz_database->savePageResponses($attemptID, $userResponsesArray);
 		//return "called";
 
 
@@ -87,12 +112,12 @@ class ek_quizAjax
 			"quizID"			=> $quizID,
 			"currentPage"		=> $pageToShow,
 			"userResponses"		=> $userResponses,
-			"redirectURL"		=> $completionRedirectURL,
+            "attemptID"         => $attemptID,
 		);
 
 
 
-		$pageStr= ekQuizDraw::drawQuizPage($args);
+		$pageStr.= ekQuizDraw::drawQuizPage($args);
 
 		// Check if its the last page - if so then check the quiz settings for jumping to a new page
 		$completionRedirectURL = "";
@@ -114,15 +139,17 @@ class ek_quizAjax
             $body = 'A new person has taken the quiz "'.$quizName.'". <a href="'.$siteURL.'/wp-admin/options.php?page=ek-quiz-results&quizID='.$quizID.'">Click here to view the partipant list</a>';
             $headers = array('Content-Type: text/html; charset=UTF-8');
 
-
             foreach ($emailArray as $thisEmail)
             {
                 $email = trim($thisEmail);
 
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     wp_mail( $email, $subject, $body, $headers );
+
+
                 }
             }
+
 		}
 
 		// Encode to a JSON array so we can do a redirect if needed
@@ -142,9 +169,19 @@ class ek_quizAjax
 		// Check the AJAX nonce
 		check_ajax_referer( 'quiz_page_ajax_nonce', 'security' );
 
-		$quizID = $_POST['quizID'];
+        $quizID = $_POST['quizID'];
+        $attemptID = $_POST['attemptID'];
 
-		echo ekQuizDraw::initaliseQuiz($quizID);
+
+        // Now draw the first page of the quiz
+        $args = array(
+            "quizID"			=> $quizID,
+            "currentPage"		=> 1,
+            "attemptID"         => $attemptID,
+        );
+
+        // Returns array of quiz and if answer is correct so get the qStr KEY
+        echo ekQuizDraw::drawQuizPage($args);
 
 		die();
 	}
@@ -353,6 +390,47 @@ class ek_quizAjax
 
 		die();
 	}
+
+    public static function initialise_quiz()
+    {
+
+
+        check_ajax_referer( 'quiz_page_ajax_nonce', 'security' );
+
+
+        global $ek_quiz_database;
+        global $ekQuizzes_CPT;
+
+        // Get the quiz ID from the JS
+        $quizID = $_POST['quizID'];
+
+        // Generate the question page array
+        $myQuestionArray = $ekQuizzes_CPT->generateQuizQuestionArray($quizID);
+
+        $userID = get_current_user_id();
+        // Get all previous attempts and up the attempt number_format
+
+        $previousAttempts = $ek_quiz_database->getAllQuizAttemptsByUser( $quizID, $userID );
+        $attemptCount = count($previousAttempts);
+
+
+        $thisAttemptNumber = $attemptCount+1;
+
+        $args = array(
+            "quizID"			 => $quizID,
+            "quizQuestionsArray" => $myQuestionArray,
+            "thisAttemptNumber"	=> $thisAttemptNumber,
+        );
+
+        // Save this latest attempt and add the attemptID as a session var
+        $attemptID = $ek_quiz_database->saveAttemptInfo($args);
+
+        echo $attemptID;
+
+        die();
+
+
+    }
 
 } // End Class
 ?>
