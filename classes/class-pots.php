@@ -318,13 +318,18 @@ class ekPots_CPT
         $enqueue = false;
 
 
+        if(!$post)
+        {
+            return;
+        }
+
         if ($hook == 'edit.php') {
             if ( 'ek_pot' === $post->post_type ) {
                 wp_enqueue_script('pot_js', EK_QUIZ_PLUGIN_URL.'/js/pot_list.js', array( 'jquery' ) ); #JS for replacing custom search on pot page
             }
         }
 
-        if ($$hook = 'admin_page_ek-pot-search') {
+        if ($hook = 'admin_page_ek-pot-search') {
             wp_enqueue_script('pot_search_js', EK_QUIZ_PLUGIN_URL.'/js/pot_search.js', array( 'jquery' ) ); #JS for replacing custom search on pot page
 
         }

@@ -131,7 +131,8 @@ class ekQuizzes_CPT
 		$columns['questions'] = 'Questions';
 		$columns['shortcode'] = 'Shortcode';
 		$columns['boundaries'] = 'Grade Boundaries';
-		$columns['results'] = 'Results';
+        $columns['question-results-breakdown'] = 'Question Breakdown';
+        $columns['results'] = 'Results';
 		//$columns['delete_quiz'] = '';
 		return $columns;
 	}
@@ -177,6 +178,10 @@ class ekQuizzes_CPT
 			case "boundaries":
 				echo '<a href="options.php?page=ek-quiz-boundaries&quizID='.$post_ID.'">Grade boundaries</a>';
 			break;
+
+            case "question-results-breakdown":
+                echo '<a href="options.php?page=ek-quiz-q-breakdown&quiz-id='.$post_ID.'">Question Results</a>';
+            break;
 
 			case "results":
 				echo '<a href="options.php?page=ek-quiz-results&quizID='.$post_ID.'">Results</a>';
@@ -774,6 +779,15 @@ class ekQuizzes_CPT
 		$myCapability = "manage_options";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
+        /* Question Breakdown Page */
+        $parentSlug = "no_parent";
+        $page_title="Question Result Breakdown";
+        $menu_title="";
+        $menu_slug="ek-quiz-q-breakdown";
+        $function=  array( $this, 'draw_q_breakdown_page' );
+        $myCapability = "manage_options";
+        add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
+
 		/* Results Page */
 		$parentSlug = "no_parent";
 		$page_title="Quiz Results";
@@ -827,6 +841,14 @@ class ekQuizzes_CPT
 	{
 		require_once EK_QUIZ_PATH.'admin/attempt_results.php'; # Results
 	}
+
+    function draw_q_breakdown_page()
+    {
+        require_once EK_QUIZ_PATH.'admin/question-breakdown.php'; # Results
+    }
+
+
+
 
 	function frontendEnqueues ()
 	{

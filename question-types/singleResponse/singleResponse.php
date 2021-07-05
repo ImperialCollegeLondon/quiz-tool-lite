@@ -25,8 +25,11 @@ class ek_singleResponse
 	{
 		global $ek_singleResponse;
 
+        // Set some default vars
 		$userResponse = '';
 		$qStr='';
+        $showButtons = '';
+
 
 		// Get Current user ID
 		$currentUserID = get_current_user_id();
@@ -314,7 +317,6 @@ class ek_singleResponse
 			// Add the Vars to the Args to pass via JSON to ajax function
 			$args['randomKey'] = $randomKey;
 			$args['userID'] = $currentUserID;
-			$args['saveResponse'] = $saveResponse;
 			$args['qType'] = self::$qType;
 
 			// Create array to pass to JS

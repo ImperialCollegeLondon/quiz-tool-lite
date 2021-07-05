@@ -193,46 +193,33 @@ class ek_quizAjax
 		// Check the AJAX nonce
 		check_ajax_referer( 'submitQuestion_ajax_nonce', 'security' );
 
-
-
 		$userID = $_POST['userID'];
 		$questionID = $_POST['questionID'];
 		$userResponse = $_POST['userResponse'];
-		$saveResponse = $_POST['saveResponse'];
-		$correctFeedback = $_POST['correctFeedback'];
-		$incorrectFeedback = $_POST['incorrectFeedback'];
+        $correctFeedback = isset($_POST['correctFeedback']) ? $_POST['correctFeedback'] : '';
+        $incorrectFeedback = isset($_POST['incorrectFeedback']) ? $_POST['incorrectFeedback'] : '';
 		$optionOrder = $_POST['optionOrder'];
 		$qType = $_POST['qType'];
 		$showAnswer = $_POST['showAnswer'];
 
 
-
-
-
-
-		$saveResponse=true; // Set this to true- we always want to save it
-		/* If the shortcode savedata is passed then save this data */
-		if($saveResponse==true)
+		$gotItCorrect='';
+		if($qType<>"reflectiveText")
 		{
 
-			$gotItCorrect='';
-			if($qType<>"reflectiveText")
-			{
+			$args = array(
+				"questionID" 	=> $questionID,
+				"userResponse"	=> $userResponse,
+			);
 
-				$args = array(
-					"questionID" 	=> $questionID,
-					"userResponse"	=> $userResponse,
-				);
-
-				$thisQ_class = 'ek_'.$qType;
-				$gotItCorrect = $thisQ_class::markQuestion($args);
-			}
-
-
-			$ek_quiz_actions = new ek_quiz_actions();
-
-			$ek_quiz_actions->saveUserResponse($questionID, $userResponse, $gotItCorrect);
+			$thisQ_class = 'ek_'.$qType;
+			$gotItCorrect = $thisQ_class::markQuestion($args);
 		}
+
+
+		$ek_quiz_actions = new ek_quiz_actions();
+
+		$ek_quiz_actions->saveUserResponse($questionID, $userResponse, $gotItCorrect);
 
 		// If its text based then convert for JSON
 		if($qType=="singleResponse")
