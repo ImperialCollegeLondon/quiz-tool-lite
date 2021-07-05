@@ -114,6 +114,9 @@ foreach ($questions_attempted_array as $question_id => $question_info)
             foreach ($response_options as $option_key => $option_info)
             {
                 $option_value = $option_info['optionValue'];
+
+                // Trim the words to 15
+                $option_value = wp_trim_words( $option_value, 9, '...'); // trim the wors
                 $is_correct = isset($option_info['isCorrect']) ? $option_info['isCorrect'] : '';
 
                 if($is_correct==1)
@@ -129,8 +132,6 @@ foreach ($questions_attempted_array as $question_id => $question_info)
                 $submitted_count_for_this = isset($questions_attempted_array[$question_id]['responses'][$option_key]) ? $questions_attempted_array[$question_id]['responses'][$option_key] : 0;
                 $tooltip = $option_value.' : '.$submitted_count_for_this.' responses';
                 $chart_data[] = array(  'value' => $submitted_count_for_this, 'label' => $option_value, 'tooltip' => $tooltip, 'backgroundColor'=> $bar_color, );
-
-
 
             }
 
