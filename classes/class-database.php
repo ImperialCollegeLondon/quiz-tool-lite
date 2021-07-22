@@ -33,16 +33,14 @@ class ek_quiz_database {
 
 		if($savedVersion=="")
 		{
-			add_option( 'ekQuizVersion', $ekQuizVersion );
+			update_option( 'ekQuizVersion', $ekQuizVersion );
 			$this->installDB();
-
 		}
-		elseif ( get_option( 'ekQuizVersion' )< $ekQuizVersion )
+		elseif ( $savedVersion< $ekQuizVersion )
 		{
 			// Update version op
 			update_option( 'ekQuizVersion', $ekQuizVersion );
 			$this->installDB();
-
 		}
 
 		// Overrider for testing
@@ -53,7 +51,7 @@ class ek_quiz_database {
 	//~~~~~
 	function installDB()
 	{
-
+		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		// Get plugin version and set option to current version
 		global $wpdb;
