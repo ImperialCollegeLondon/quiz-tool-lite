@@ -767,7 +767,7 @@ class ekQuizzes_CPT
 		$menu_title="";
 		$menu_slug="ek-quiz-boundaries";
 		$function=  array( $this, 'drawBoundariesPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 		/* Boundaries Edit Page */
@@ -776,7 +776,7 @@ class ekQuizzes_CPT
 		$menu_title="";
 		$menu_slug="ek-quiz-edit-boundaries";
 		$function=  array( $this, 'drawEditBoundariesPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
         /* Question Breakdown Page */
@@ -785,7 +785,7 @@ class ekQuizzes_CPT
         $menu_title="";
         $menu_slug="ek-quiz-q-breakdown";
         $function=  array( $this, 'draw_q_breakdown_page' );
-        $myCapability = "manage_options";
+        $myCapability = "delete_pages";
         add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 		/* Results Page */
@@ -794,7 +794,7 @@ class ekQuizzes_CPT
 		$menu_title="";
 		$menu_slug="ek-quiz-results";
 		$function=  array( $this, 'drawResultsPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 		/* Individual User Results Page */
 		$parentSlug = "no_parent";
@@ -802,7 +802,7 @@ class ekQuizzes_CPT
 		$menu_title="";
 		$menu_slug="ek-user-attempts";
 		$function=  array( $this, 'drawUserAttemptsPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 		/* Single Quiz Attempt resuts for a User  */
@@ -811,7 +811,7 @@ class ekQuizzes_CPT
 		$menu_title="";
 		$menu_slug="ek-user-attempt";
 		$function=  array( $this, 'drawSingleAttemptPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 

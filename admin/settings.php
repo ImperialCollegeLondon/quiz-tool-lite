@@ -1,19 +1,19 @@
 <?php
 
-	if ( ! defined( 'ABSPATH' ) ) 
+	if ( ! defined( 'ABSPATH' ) )
 	{
 		die();	// Exit if accessed directly
 	}
-	
-	// Only let them view if admin		
-	if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
+
+	// Only let them view if admin
+	if(!current_user_can(get_option('min_quiz_access_level', 'delete_pages')))
 	{
 		die();
-	}	
-	
-	
-	wp_enqueue_style( 'ek-quiz-css' );		
-	
+	}
+
+
+	wp_enqueue_style( 'ek-quiz-css' );
+
 ?>
 <?php
 echo '<h1>Quiz Settings</h1>';
@@ -21,18 +21,18 @@ echo '<h1>Quiz Settings</h1>';
 
 if ( isset( $_GET['action'] ) )
 {
-	// Check the nonce before proceeding;	
+	// Check the nonce before proceeding;
 	$retrieved_nonce="";
 	if(isset($_REQUEST['_wpnonce'])){$retrieved_nonce = $_REQUEST['_wpnonce'];}
-	
+
 	$myAction = $_GET['action'];
 	switch ($myAction)
 	{
-	
+
 		case "updateSettings":
-		
+
 			if (wp_verify_nonce($retrieved_nonce, 'submitForm' ) )
-			{		
+			{
 				$defaultCorrectFeedback = $_POST['defaultCorrectFeedback'];
 				$defaultIncorrectFeedback = $_POST['defaultIncorrectFeedback'];
 				$showCorrectAnswer = '';
@@ -40,15 +40,15 @@ if ( isset( $_GET['action'] ) )
 				{
 					$showCorrectAnswer = $_POST['showCorrectAnswer'];
 				}
-				
+
 				// Update the defaults
 				update_option('ek-quiz-correct-feedback', $defaultCorrectFeedback);
 				update_option('ek-quiz-incorrect-feedback', $defaultIncorrectFeedback);
 				update_option('ek-quiz-showCorrectAnswer', $showCorrectAnswer);
-				
-				
-				$min_access_level = $_POST['min_access_level'];
-				update_option('min_quiz_access_level', $min_access_level);
+
+
+			//	$min_access_level = $_POST['min_access_level'];
+		//		update_option('min_quiz_access_level', $min_access_level);
 
 				$updateShowCorrectForAll = '';
 				if(isset($_POST['updateShowCorrectForAll']) )
@@ -60,72 +60,72 @@ if ( isset( $_GET['action'] ) )
 						$potID = $potInfo->ID;
 						$args = array("potID" => $potID);
 						$questionsRS = ekQuiz_queries::getPotQuestions($args);
-						
+
 						foreach($questionsRS as $questionInfo)
 						{
-							$questionID = $questionInfo->ID;						
-							update_post_meta( $questionID, 'showCorrectAnswer', $showCorrectAnswer );		
-							
+							$questionID = $questionInfo->ID;
+							update_post_meta( $questionID, 'showCorrectAnswer', $showCorrectAnswer );
+
 						}
 					}
-				}			
-				
-				
-				
+				}
+
+
+
 				echo '<div class="notice notice-success is-dismissible"><p>Settings Updated</p></div>';
 			}
-			
-			
-			
+
+
+
 		break;
-		
+
 		case "deleteAdminData":
-		
+
 			if (wp_verify_nonce($retrieved_nonce, 'deleteAdminDataNonce' ) )
 			{
-				
+
 				// Get editors and admin users
-				
-				
-				
-				
+
+
+
+
 				$deleteUsersArray = array();
-				
+
 				// get the admins
-				$adminUsers = get_users( 'role=administrator' );				
+				$adminUsers = get_users( 'role=administrator' );
 				foreach ($adminUsers as $userMeta)
 				{
 					$userID = $userMeta-> ID;
 					$deleteUsersArray[] = $userID;
 				}
-				
+
 				// Get the editors
-				$editorUsers = get_users( 'role=editor' );				
+				$editorUsers = get_users( 'role=editor' );
 				foreach ($editorUsers as $userMeta)
 				{
 					$userID = $userMeta-> ID;
 					$deleteUsersArray[] = $userID;
-				}			
+				}
 				global $wpdb;
 				global $userResponsesTable;
 				global $quizAttemptsTable;
-								
+
 				foreach ($deleteUsersArray as $userDeleteID)
 				{
-					$wpdb->delete( $userResponsesTable, array( 'userID' => $userDeleteID ) );					
-					$wpdb->delete( $quizAttemptsTable, array( 'userID' => $userDeleteID ) );					
+					$wpdb->delete( $userResponsesTable, array( 'userID' => $userDeleteID ) );
+					$wpdb->delete( $quizAttemptsTable, array( 'userID' => $userDeleteID ) );
 				}
-				
+
 				echo '<div class="notice notice-success is-dismissible"><p>Data Deleted</p></div>';
-				
+
 			}
-		
-		
+
+
 		break;
-			
-			
+
+
 	} // End of switch
-		
+
 
 } // End is action
 
@@ -187,29 +187,7 @@ echo 'Update all existing questions to this setting (cannot be undone!)';
 ?>
 </label>
 
-
-<h2>Minimum level required to edit / view questions:</h2>
-
 <?php
-$levelArray = array(
-array("manage_options", "Administrators"),
-array("edit_pages", "Editors"),
-array("edit_posts", "Authors"),
-);
-
-
-
-foreach ($levelArray as $levelMeta)
-{
-	$thisValue = $levelMeta[0];
-	$thisText = $levelMeta[1];
-	echo '<label for="'.$thisValue.'">';
-	echo '<input type="radio" name="min_access_level" id="'.$thisValue.'" value="'.$thisValue.'"';
-	if($minAccessLevel==$thisValue){echo ' checked';}
-	echo '>';
-	echo $thisText.' ('.$thisValue.')</label><br/>';
-}
-
 
 
 ?>
@@ -217,7 +195,7 @@ foreach ($levelArray as $levelMeta)
 <input type="submit" value="Update" name="submit" class="button-primary" />
 <?php
 // Add nonce
-wp_nonce_field('submitForm');    
+wp_nonce_field('submitForm');
 ?>
 </div>
 
@@ -238,7 +216,7 @@ Remove question data and quiz data submitted by <strong>editors</strong> and <st
 <br/>
 <input type="submit" class="button-primary" value="Yes delete this data">
 <?php
-wp_nonce_field('deleteAdminDataNonce');    
+wp_nonce_field('deleteAdminDataNonce');
 
 ?>
 </form>
@@ -246,9 +224,9 @@ wp_nonce_field('deleteAdminDataNonce');
 </div>
 
 <script>
-jQuery( document ).ready(function() {   
+jQuery( document ).ready(function() {
 	jQuery( "#deleteAdminDataCheck" ).click(function() {
 		jQuery( "#confirmAdminDataDelete" ).toggle( "fast");
-	});    
+	});
 });
 </script>

@@ -1102,7 +1102,7 @@ class ekQuestions_CPT
 			'null',
 			'My Custom Submenu Page',
 			'My Custom Submenu Page',
-			'manage_options',
+			'delete_pages',
 			'my-custom-submenu-page',
 			array ($this, 'draw_qTypeSelectPage' ) );
 	}
@@ -1303,7 +1303,7 @@ class ekQuestions_CPT
 		$menu_title="";
 		$menu_slug="ek-question-results";
 		$function=  array( $this, 'drawResultsPage' );
-		$myCapability = "manage_options";
+		$myCapability = "delete_pages";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 	}

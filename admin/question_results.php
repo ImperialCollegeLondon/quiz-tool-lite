@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) )
 }
 
 // Only let them view if admin
-	if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
+	if(!current_user_can('delete_pages'))
 {
 	die();
 }

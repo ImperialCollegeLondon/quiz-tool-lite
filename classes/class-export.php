@@ -33,7 +33,7 @@ class ekQuiz_export
 	{
 
 		// Check permissions	
-		if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
+		if(!current_user_can('delete_pages'))
 		{
 			return;
 		}	
@@ -82,7 +82,7 @@ class ekQuiz_export
 	{
 		
 		// Check permissions	
-		if(!current_user_can(get_option('min_quiz_access_level', 'manage_options')))
+		if(!current_user_can('delete_pages'))
 		{
 			return;
 		}
@@ -216,7 +216,7 @@ class ekQuiz_export
 	public static function csv_export()
 	{
 		// Check for current user privileges 
-		if(!current_user_can(get_option('min_quiz_access_level', 'manage_options'))){ return false; }
+		if(!current_user_can('delete_pages')){ return false; }
 		
 	
 		

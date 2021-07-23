@@ -287,7 +287,7 @@ class ekPots_CPT
         $menu_title="";
         $menu_slug="ek-pot-delete-check";
         $function=  array( $this, 'drawPotDeleteCheckPage' );
-        $myCapability = "manage_options";
+        $myCapability = "delete_pages";
         add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
         /* Create Question Results Pages */
@@ -296,7 +296,7 @@ class ekPots_CPT
         $menu_title="";
         $menu_slug="ek-pot-search";
         $function=  array( $this, 'drawPotSearchPage' );
-        $myCapability = "manage_options";
+        $myCapability = "delete_pages";
         add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
 
 
