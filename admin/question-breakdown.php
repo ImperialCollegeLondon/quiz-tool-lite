@@ -33,57 +33,65 @@ foreach ($quiz_attempts as $attempt_info)
     $questions = unserialize($attempt_info['questionOrder']);
     $answers = unserialize($attempt_info['userResponses']);
 
-    foreach ($questions as $queston_meta)
+    foreach ($questions as $pages)
     {
-        $q_type = $queston_meta[0]['qType'];
-        $question_id = $queston_meta[0]['questionID'];
+		foreach ($pages as $question_meta)
+		{
+			//printArray($question_meta);
+	        $q_type = $question_meta['qType'];
+	        $question_id = $question_meta['questionID'];
 
-        $this_response = isset($answers[$question_id]) ? $answers[$question_id] : '';
+			$this_response = '';
+			if(array_key_exists($question_id, $answers) )
+			{
+				$this_response = $answers[$question_id];
+			}
 
-        $questions_attempted_array[$question_id]['q_type'] = $q_type;
-        $questions_attempted_array[$question_id]['responses']['all-responses'][] = $this_response;// add the answer if given
+	        $questions_attempted_array[$question_id]['q_type'] = $q_type;
+	        $questions_attempted_array[$question_id]['responses']['all-responses'][] = $this_response;// add the answer if given
 
-        // ADd the ttoals if single response or checkbox
-        if($this_response)
-        {
-            switch ($q_type)
-            {
-                case "singleResponse":
-                    $current_count = 0;
-                    if(isset($questions_attempted_array[$question_id]['responses'][$this_response]) )
-                    {
-                        $current_count = $questions_attempted_array[$question_id]['responses'][$this_response];
-                        $current_count = $current_count + 1;
-                    }
-                    else
-                    {
-                        $current_count = 1;
-                    }
-                    $questions_attempted_array[$question_id]['responses'][$this_response] = $current_count; // add the answer if given
-                break;
+	        // ADd the ttoals if single response or checkbox
+	        if($this_response)
+	        {
+	            switch ($q_type)
+	            {
+	                case "singleResponse":
+	                    $current_count = 0;
+	                    if(isset($questions_attempted_array[$question_id]['responses'][$this_response]) )
+	                    {
+	                        $current_count = $questions_attempted_array[$question_id]['responses'][$this_response];
+	                        $current_count = $current_count + 1;
+	                    }
+	                    else
+	                    {
+	                        $current_count = 1;
+	                    }
+	                    $questions_attempted_array[$question_id]['responses'][$this_response] = $current_count; // add the answer if given
+	                break;
 
-                case "multiResponse":
-                    //Convert the responses into an array as checkboxes can have nultiple answers
-                    $responses = explode(",", $this_response);
-                    $responses = array_filter($responses); // Remove blank values
-                    foreach ($responses as $this_value)
-                    {
-                        $current_count = 0;
-                        if(isset($questions_attempted_array[$question_id]['responses'][$this_value]) )
-                        {
-                            $current_count = $questions_attempted_array[$question_id]['responses'][$this_value];
-                            $current_count = $current_count + 1;
-                        }
-                        else
-                        {
-                            $current_count = 1;
-                        }
-                        $questions_attempted_array[$question_id]['responses'][$this_value] = $current_count; // add the answer if given
+	                case "multiResponse":
+	                    //Convert the responses into an array as checkboxes can have nultiple answers
+	                    $responses = explode(",", $this_response);
+	                    $responses = array_filter($responses); // Remove blank values
+	                    foreach ($responses as $this_value)
+	                    {
+	                        $current_count = 0;
+	                        if(isset($questions_attempted_array[$question_id]['responses'][$this_value]) )
+	                        {
+	                            $current_count = $questions_attempted_array[$question_id]['responses'][$this_value];
+	                            $current_count = $current_count + 1;
+	                        }
+	                        else
+	                        {
+	                            $current_count = 1;
+	                        }
+	                        $questions_attempted_array[$question_id]['responses'][$this_value] = $current_count; // add the answer if given
 
-                    }
+	                    }
 
-                break;
-            }
+	                break;
+	            }
+			}
 
         }
 

@@ -1,15 +1,15 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) 
+if ( ! defined( 'ABSPATH' ) )
 {
 	die();	// Exit if accessed directly
 }
 
-// Only let them view if admin		
+// Only let them view if admin
 	if(!current_user_can('delete_pages'))
 {
 	die();
-}	
+}
 
 
 $attemptID = $_GET['attemptID'];
@@ -26,6 +26,8 @@ $args = array(
 "quizID"	=> $quizID,
 "quizReportScreen"	=> true,
 );
+
+
 echo '<a href="options.php?page=ek-user-attempts&quizID='.$quizID.'&userID='.$userID.'">'.ekQuizDraw::backIcon().'Back to all user attempts</a>';
 echo ekQuizDraw::drawQuizPage($args);
 ?>

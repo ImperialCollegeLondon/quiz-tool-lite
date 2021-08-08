@@ -468,7 +468,15 @@ class ekQuizDraw
 		$quizID = $args ['quizID'];
 		// Get the quiz meta
 		$quiz_meta = get_post_meta($quizID);
+
+		// SHow the feedback?
+
 		$showQuestionFeedback = isset( $quiz_meta['showQuestionFeedback'] ) ? $quiz_meta['showQuestionFeedback'][0] : true;
+
+		if($quizReportScreen==1)
+		{
+			$showQuestionFeedback = true;
+		}
 
 		$currentPage = $args['currentPage'];
 
