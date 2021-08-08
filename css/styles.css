@@ -315,25 +315,6 @@ body ul li.ek-response {
 
 
 
-/* Quiz Stuff */
-.quizStartButton
-{
-	background:#336699;
-	color:#f7f7f7;
-	padding:10px;
-	border:1px solid #003366;
-	border-radius:5px;
-	font-size:16px;
-}
-
-.quizStartButton:hover
-{
-	color:#fff;
-	cursor:pointer;
-
-}
-
-
 /* Leadboard Tables */
 
 .ekTable

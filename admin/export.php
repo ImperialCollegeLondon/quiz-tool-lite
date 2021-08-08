@@ -1,10 +1,10 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) 
+if ( ! defined( 'ABSPATH' ) )
 {
 	die();	// Exit if accessed directly
 }
-// Only let them view if admin		
-	if(!current_user_can('delete_pages'))
+// Only let them view if admin
+if(!current_user_can('delete_pages'))
 {
 	die();
 }
@@ -22,11 +22,11 @@ function saveResponseOptionImport($optionArray, $questionID)
 	//echo '<b>Add options for '.$questionID.'</b><br/>';
 	//echo  '<pre>';
 	//print_r($optionArray);
-	//echo '</pre>';	
+	//echo '</pre>';
 	//echo 'Next Key = '.$next_key.'<br/>';
 
-	
-	
+
+
 	update_post_meta( $questionID, 'autoIncrementOptionKeyID', $next_key );
 	update_post_meta( $questionID, 'responseOptions', $optionArray );
 }
@@ -37,15 +37,15 @@ function saveResponseOptionImport($optionArray, $questionID)
 // If form was submitted then sanitize the submitted values and update the settings.
 if ( isset( $_GET['myAction'] ) )
 {
-	
+
 	$myAction = $_GET['myAction'];
 	switch ($myAction)
-	{		
+	{
 
 		case "CSVUpload":
-		
-		
-			// Check the nonce before proceeding;	
+
+
+			// Check the nonce before proceeding;
 			$retrieved_nonce="";
 			$feedbackStr = '';
 			$newPotCount=0;
@@ -53,79 +53,79 @@ if ( isset( $_GET['myAction'] ) )
 			$updatedPotCount=0;
 			$updatedQuestionCount=0;
 			if(isset($_REQUEST['_wpnonce'])){$retrieved_nonce = $_REQUEST['_wpnonce'];}
-			
+
 			if (wp_verify_nonce($retrieved_nonce, 'CSV_UploadNonce' ) )
 			{
 				$newFilename = dirname(__FILE__).'\questionImport.csv';
-				
+
 				if(isset($_FILES['csvFile']['tmp_name']))
 				{
-					
+
 					move_uploaded_file($_FILES['csvFile']['tmp_name'], $newFilename);
-					
+
 					// Go through the CSV stuff
 					ini_set('auto_detect_line_endings',1);
 					$handle = fopen($newFilename, 'r');
-					
+
 					// Define the option loop
 					$inOptionLoop = '';
 
 					while (($data = fgetcsv($handle, 1000, ',')) !== FALSE)
 					{
-						$dataType = trim($data[1]);						
+						$dataType = trim($data[1]);
 
 						switch ($dataType)
 						{
 							case "POT":
-							
+
 								if($inOptionLoop==true)
 								{
 
-									saveResponseOptionImport($tempOptionArray, $parentQuestionID);								
-									
-		
+									saveResponseOptionImport($tempOptionArray, $parentQuestionID);
+
+
 									// Reset the array
 									$tempOptionArray = array();
 								}
-							
-							
+
+
 								$inOptionLoop=false; // Reset the option Loop
 								$potID = trim($data[0]);
 								$potName = trim($data[2]);
-								
-								
+
+
 								//echo 'pot ID = '.$potID.'<br/>';
-								
+
 								// Check to see if the pot ID exists
-								$checkPost = get_post_status($potID);								
+								$checkPost = get_post_status($potID);
 								$potAction = "new"; // By default create new pot
-								
+
 								if($checkPost)
 								{
-									//echo 'This Pot Exists - check for correct type<br/>';									
-									$postInfo = get_post($potID);		
+									//echo 'This Pot Exists - check for correct type<br/>';
+									$postInfo = get_post($potID);
 									if($postInfo->post_type =="ek_pot")
 									{
 										//echo 'This is a question pot so update<br/>';
 										$potAction = "update";
-									}									
+									}
 								}
-								
+
 								//echo 'potAction = '.$potAction.'<br/>';
-								
+
 								if($potAction=="new")
 								{
 									// Create new pot
 									$my_post = array(
-									  'post_title'		=> $potName,									  
+									  'post_title'		=> $potName,
 									  'post_status'		=> 'publish',
 									  'post_type'		=> "ek_pot"
-									  
+
 									);
-									 
+
 									// Insert the post into the database
 									$parentPotID = wp_insert_post( $my_post );
-									
+
 									$newPotCount++;
 								}
 								else // Do an update
@@ -139,26 +139,26 @@ if ( isset( $_GET['myAction'] ) )
 									wp_update_post( $my_pot );
 									$parentPotID = $potID;
 									$updatedPotCount++;
-								
+
 								}
-								
-								
-							
+
+
+
 							break;
-							
-							
-							
+
+
+
 							case "QUESTION":
-							
+
 								if($inOptionLoop==true)
 								{
-									saveResponseOptionImport($tempOptionArray, $parentQuestionID);									
-									
+									saveResponseOptionImport($tempOptionArray, $parentQuestionID);
+
 									// Reset the array
 									$tempOptionArray = array();
-								}							
-							
-							
+								}
+
+
 								$inOptionLoop=false; // Reset the option Loop
 								$questionID = trim($data[0]);
 								$qType = trim($data[2]);
@@ -169,42 +169,42 @@ if ( isset( $_GET['myAction'] ) )
 								$randomiseOptions = trim($data[7]);
 								$caseSensitive = trim($data[8]);
 								$addTextarea = trim($data[9]);
-								
-								
+
+
 								//echo 'randomiseOptions = '.$randomiseOptions.'<br/>';
-								
-								
+
+
 								if($randomiseOptions=="randomise")
 								{
 									$randomiseOptions="on";
 								}
-								
+
 								if($caseSensitive=="Case Sensitive")
 								{
 									$caseSensitive="on";
 								}
-								
+
 								if($addTextarea=="Include Textarea")
 								{
 									$addTextarea="on";
-								}	
-								
-								
+								}
+
+
 								// Check to see if the pot ID exists
-								$checkPost = get_post_status($questionID);								
+								$checkPost = get_post_status($questionID);
 								$questionAction = "new"; // By default create new pot
-								
+
 								if($checkPost)
 								{
-								//	echo 'This Pot Exists - check for correct type<br/>';									
-									$postInfo = get_post($questionID);		
+								//	echo 'This Pot Exists - check for correct type<br/>';
+									$postInfo = get_post($questionID);
 									if($postInfo->post_type =="ek_question")
 									{
 										//echo 'This is a question pot so update<br/>';
 										$questionAction = "update";
-									}									
-								}	
-								
+									}
+								}
+
 								if($questionAction=="new")
 								{
 									//echo 'CREATE NEW QUETION.<br/>';
@@ -217,16 +217,16 @@ if ( isset( $_GET['myAction'] ) )
 										'post_parent'		=> $parentPotID,
 
 									);
-									 
+
 									// Insert the post into the database
 									$parentQuestionID = wp_insert_post( $my_question );
-									
+
 									$newQuestionCount++;
 								}
 								else // Do an update
 								{
-									
-									//echo 'UPDATE QUETION.<br/>';									
+
+									//echo 'UPDATE QUETION.<br/>';
 										$my_question = array(
 										'ID'           => $questionID,
 										'post_title'   => $questionName,
@@ -239,56 +239,56 @@ if ( isset( $_GET['myAction'] ) )
 									$parentQuestionID = $questionID;
 									$updatedQuestionCount++;
 								}
-								
+
 								// Save the question meta
-								update_post_meta( $parentQuestionID, 'correctFeedback', $correctFeedback );		
+								update_post_meta( $parentQuestionID, 'correctFeedback', $correctFeedback );
 								update_post_meta( $parentQuestionID, 'incorrectFeedback', $incorrectFeedback );
 								update_post_meta( $parentQuestionID, 'randomiseOptions', $randomiseOptions );
 								update_post_meta( $parentQuestionID, 'caseSensitive', $caseSensitive );
 								update_post_meta( $parentQuestionID, 'addTextarea', $addTextarea );
 								update_post_meta( $parentQuestionID, 'qType', $qType );
-								
-							
-							
+
+
+
 							break;
-							
+
 							case "RESPONSE-OPTION":
 								$optionValue = trim($data[2]);
 								$isCorrect = trim($data[3]);
-								
+
 								// If not in option loop then this is the start of the options
 								// Create a temp array
 								if($inOptionLoop==false)
 								{
 									$tempOptionArray = array();
 								}
-									
+
 								$inOptionLoop=true;
-								
+
 								$tempOptionArray[] = array (
 									"optionValue" => $optionValue,
 									"isCorrect"		=> $isCorrect
 								);
 
-							
-							
+
+
 							break;
-							
-							
-							
-							
-							
+
+
+
+
+
 						}
-						
+
 					} // End CSV loop
-					
+
 				} // End if file type is CSV
 				// Now delete the temp file
-				unlink ($newFilename);		
-				
-				
+				unlink ($newFilename);
+
+
 				$feedback='';
-				
+
 				if($newPotCount>=1)
 				{
 					$feedback.=$newPotCount.' new pots created<br/>';
@@ -305,13 +305,13 @@ if ( isset( $_GET['myAction'] ) )
 				{
 					$feedback.=$updatedQuestionCount.' questions updated<br/>';
 				}
-		
+
 			}
 
-		break;	
-	
+		break;
+
 		} // End of switch
-		
+
 
 } // End is action
 
@@ -340,7 +340,7 @@ if($feedback)
 <input type="submit" value="Upload" name="submit" class="button-primary" />
 <?php
 // Add nonce
-wp_nonce_field('CSV_UploadNonce');    
+wp_nonce_field('CSV_UploadNonce');
 ?>
 
 </form>

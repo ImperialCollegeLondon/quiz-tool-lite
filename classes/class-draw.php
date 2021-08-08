@@ -365,24 +365,41 @@ class ekQuizDraw
 
 		$qStr.='<div id="ek-quizWrapper">';
 
-		$accessCheckInfo = $ekQuizzes_CPT->checkQuizAccess($quizID);
+		$accessCheckInfo = $ekQuizzes_CPT->checkQuizAccess($quizID); // Can they the quiz or not
+
 		$allowAttempt = $accessCheckInfo[0]; // First Value of the array is true or false. False if not accces
 
 		if($allowAttempt==true)
 		{
 			$qStr.=$quizInstructions;
-
 			if($timeLimitInfo)
 			{
-				$qStr.='<hr/>'.$timeLimitInfo.'<hr/>';
+				$qStr.='<div class="block">'.$timeLimitInfo.'</div>';
 			}
-			$qStr.='<button class="quizStartButton" id="quizID_'.$quizID.'">Start the Quiz</button>';
-
 		}
 		else
 		{
-			$qStr.=$accessCheckInfo[1];
+			$qStr.='<div class="block">'.$accessCheckInfo[1].'</div>';
 		}
+
+		$qStr.='<div class="buttons">';
+		if($allowAttempt==true)
+		{
+			$qStr.='<button class="button is-success quizStartButton" id="quizID_'.$quizID.'">Start the Quiz</button>';
+		}
+		elseif(current_user_can('delete_pages'))
+		{
+			$qStr.='<button class="button is-success quizStartButton" id="quizID_'.$quizID.'">Preview Quiz</button>';
+		}
+
+		// Can the current person edit the quiz? If so show the quiz edit button
+		if(current_user_can('delete_pages'))
+		{
+			$home_url = get_site_url();
+			$qStr.='<a class="button" href="'.$home_url.'/wp-admin/post.php?post='.$quizID.'&action=edit">Edit Quiz</a>';
+		}
+
+		$qStr.='</div>'; // Close the buttons wwrapper
 		$qStr.='</div>'; // Close the ek-quizWrapper
 
 
@@ -432,11 +449,8 @@ class ekQuizDraw
 	public static function drawQuizPage($args)
 	{
 
-
 		// Load the required scripts
 		ekQuiz::registerMyFrontScripts();
-
-
 
 		global $ek_quiz_database;
 		$pageStr = '';
@@ -449,17 +463,14 @@ class ekQuizDraw
 		if(isset($args['quizReportScreen']))
 		{
 			$quizReportScreen = $args['quizReportScreen'];
-
-		}
-
-		if(!isset($args['quizID']) )
-		{
-		//	return;
 		}
 
 		$quizID = $args ['quizID'];
-		$currentPage = $args['currentPage'];
+		// Get the quiz meta
+		$quiz_meta = get_post_meta($quizID);
+		$showQuestionFeedback = isset( $quiz_meta['showQuestionFeedback'] ) ? $quiz_meta['showQuestionFeedback'][0] : true;
 
+		$currentPage = $args['currentPage'];
 
         if(isset($args['attemptID']))
         {
@@ -479,8 +490,6 @@ class ekQuizDraw
 
 		$userResponses = $attemptInfo['userResponses'];
 		$userResponses = unserialize($userResponses);
-
-
 
 
 		// If the quiz is finished read only is ON
@@ -520,6 +529,9 @@ class ekQuizDraw
 		$totalAvailableWeighting = 0;
 
 
+		//  Loop through the questions and render to page
+		// Create the question string
+		$question_string = '';
 		foreach ($questionsOnPageArray as $questionInfo)
 		{
 			$questionID = $questionInfo['questionID'];
@@ -528,17 +540,13 @@ class ekQuizDraw
 
 			$responseOptions = $questionInfo['responseOptions'];
 
-
-
 			$thisUserResponse = "";
 
 			if(isset($userResponses[$questionID])){$thisUserResponse = ekQuiz_utils::processDatabaseTextForTextarea($userResponses[$questionID]);}
 
 
             // Get the current question number
-
             $currentQuestionNumber = ekQuiz_utils::getCurrentQuestionNumber($questionID, $quizQuestionsArray);
-
 
 			$args = array(
 
@@ -564,17 +572,17 @@ class ekQuizDraw
 			// Get the qType for this question
 			$thisQuestionClass = 'ek_'.$qType;
 
-			$pageStr.='<div class="ek-question" id="ek-question_'.$questionID.'_'.$qType.'">';
+			$question_string.='<div class="ek-question" id="ek-question_'.$questionID.'_'.$qType.'">';
 
 
             // Show the currnet question number
             if($currentQuestionNumber)
             {
-                $pageStr.='<div class="ek_question_number">Question '.$currentQuestionNumber.'.</div>';
+                $question_string.='<div class="ek_question_number">Question '.$currentQuestionNumber.'.</div>';
             }
 
-			$pageStr.= $thisQuestionClass::drawQuestion($args);
-			$pageStr.='</div>';
+			$question_string.= $thisQuestionClass::drawQuestion($args);
+			$question_string.='</div>';
 
 
 			// Mark and calculate score as well if its the answers page
@@ -624,17 +632,13 @@ class ekQuizDraw
 			// Get the percentage based on question weighting
 			$percentageScore = round(($totalWeighting / $totalAvailableWeighting) * 100);
 
-
 			$markedFeedback = '<div class="markOutOfTotalFeedback">You got <b>'.$percentageScore.'%</b> ('.$totalCorrect.' / '.$questionCount.' questions correct)</div>';
 
 			// Update this in the DB - but only if not admin screen
-
-
 			if($quizReportScreen<>1)
 			{
 				$ek_quiz_database->saveQuizScore($attemptID, $percentageScore);
 			}
-
 
 			// Check if there is grade boundary to show
 			$boundaryFeedback =  ekQuiz_queries::getBoundaryFeedback($percentageScore, $quizID);
@@ -644,13 +648,21 @@ class ekQuizDraw
 				$boundaryFeedback = '<div class="boundaryFeedback">'.$boundaryFeedback.'</div>';
 			}
 
-			$pageStr=$markedFeedback.$boundaryFeedback.$completionMessage.$pageStr;
+			$pageStr=$markedFeedback.$boundaryFeedback.$completionMessage;
+
+			// Show the answers?
+			if($showQuestionFeedback=="true")
+			{
+				$pageStr.=$question_string;
+			}
+
+
 
 			return $pageStr; // Return now as it's showing theanswers so need for submit buttons
 		}
 
 
-
+		$pageStr.=$question_string;
 		$pageStr.='Page '.$currentPage.' / '.$pageCount.'<br/><br/>';
 
 		// Add hidden form for the quiz ID
@@ -950,6 +962,75 @@ class ekQuizDraw
 
 		return $leaderboardStr;
 
+	}
+
+
+	// Draw the quiz list if the page slug is quizzes
+	public static function draw_quiz_list($content)
+	{
+		if ( is_page() )
+		{
+			// Get the page slug
+			global $post;
+			$post_slug = $post->post_name;
+			if($post_slug=="quizzes")
+			{
+				if(isset($_GET['quiz-id']) )
+				{
+					// Process the shortcode
+
+					$atts = array(
+						'id' => $_GET['quiz-id'],
+					);
+
+					return ekQuizDraw::drawShortcodeQuiz($atts);
+				}
+				else
+				{
+					$quiz_list = ekQuizDraw::quiz_list();
+					return $content . $quiz_list;
+				}
+
+			}
+		}
+		return $content;
+	}
+
+	public static function quiz_list()
+	{
+		$html = '';
+
+		// Get the quiz list
+		$quizzes = ekQuiz_queries::getQuizzes();
+
+		$ekQuizzes_CPT = new ekQuizzes_CPT();
+
+		$quiz_count = count($quizzes);
+
+		if($quiz_count==0)
+		{
+			return 'No quizzes found';
+
+		}
+
+		$html.='<table class="table is-fullwidth">';
+		foreach ($quizzes as $quiz_info)
+		{
+			$quiz_id = $quiz_info->ID;
+			$quiz_access = $ekQuizzes_CPT->checkQuizAccess($quiz_id);
+			$allow_quiz = $quiz_access[0];
+			$quiz_name = $quiz_info->post_title;
+
+			if($allow_quiz)
+			{
+				$html.='<tr>';
+				$html.='<td class="is-size-4"><a href="?quiz-id='.$quiz_id.'">'.$quiz_name.'</a></td>';
+				$html.='</tr>';
+			}
+		}
+		$html.='</table>';
+
+		return $html;
 	}
 
 

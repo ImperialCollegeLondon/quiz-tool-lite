@@ -47,6 +47,9 @@ class ekQuiz
 		add_shortcode('ek-question-response', array('ekQuizDraw','drawUserResponse'));
 		add_shortcode('ek-quiz-leaderboard', array( 'ekQuizDraw', 'drawLeaderboard'));
 
+		// The list of quizzes
+		add_filter( 'the_content', array( 'ekQuizDraw', 'draw_quiz_list'));
+
 		// Legacy Shortcodes
 		add_shortcode('QTL-Question', array('ekQuizDraw','drawLegacyShortcodeQuestion'));
 		add_shortcode('QTL-Leaderboard', array( 'ekQuizDraw', 'drawLegacyLeaderboard'));

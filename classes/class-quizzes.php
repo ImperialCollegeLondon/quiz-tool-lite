@@ -9,7 +9,12 @@ class ekQuizzes_CPT
 		"completionRedirectURL"		=> "", // URL to redirect to after quiz finishes
 		"emailOnCompletionList"	    => "", // Email current user when quiz is finised
 		"showQuestionFeedback"		=> "on",
-		"availableFromDate"			=> "",
+		"available_from"			=> "",
+		"available_from_hour" => "08",
+		"available_from_min" => "00",
+		"available_to"			=> "",
+		"available_to_hour" => "16",
+		"available_to_min" => "00",
 		"loginRequired"				=> "on",
 		"maxAttempts"				=> "",
 		"emailParticipantMark"		=> "",
@@ -513,38 +518,67 @@ class ekQuizzes_CPT
 	function  drawDatesMetaBox($post,$metabox)
 	{
 
-		$questionID = $post->ID;
+		$quiz_id = $post->ID;
 		// Get default values and post meta
 		$defaultQuizOptions = $this-> defaultQuizOptions;
 
+		// Create the form object
+		$form = new \imperial_form();
+
 		// Get the question meta
-		$quizMeta = get_post_meta($questionID);
+		$quizMeta = get_post_meta($quiz_id);
 
 		// Get the values for this metabox
 		$loginRequired = isset( $quizMeta['loginRequired'] ) ? $quizMeta['loginRequired'][0] : $defaultQuizOptions['loginRequired'];
 		$maxAttempts = isset( $quizMeta['maxAttempts'] ) ? $quizMeta['maxAttempts'][0] : $defaultQuizOptions['maxAttempts'];
 		$attemptIntervalHours = isset( $quizMeta['attemptIntervalHours'] ) ? $quizMeta['attemptIntervalHours'][0] : $defaultQuizOptions['attemptIntervalHours'];
 		$attemptIntervalDays = isset( $quizMeta['attemptIntervalDays'] ) ? $quizMeta['attemptIntervalDays'][0] : $defaultQuizOptions['attemptIntervalDays'];
-		$availableFromDate = isset( $quizMeta['availableFromDate'] ) ? $quizMeta['availableFromDate'][0] : $defaultQuizOptions['availableFromDate'];
-
 
 		// Time Limit Meta
 		$timeLimit 	= isset( $quizMeta['timeLimit'] ) ? $quizMeta['timeLimit'][0] : $defaultQuizOptions['timeLimit'];
 		$timeLimitMinutes 	= isset( $quizMeta['timeLimitMinutes'] ) ? $quizMeta['timeLimitMinutes'][0] : $defaultQuizOptions['timeLimitMinutes'];
 
+
+		// Process the start and end date
+		$available_from = isset( $quizMeta['available_from'] ) ? $quizMeta['available_from'][0] : $defaultQuizOptions['available_from'];
+		$available_from_hour = isset( $quizMeta['available_from_hour'] ) ? $quizMeta['available_from_hour'][0] : $defaultQuizOptions['available_from_hour'];
+		$available_from_min = isset( $quizMeta['available_from_min'] ) ? $quizMeta['available_from_min'][0] : $defaultQuizOptions['available_from_min'];
+
+		$available_to = isset( $quizMeta['available_to'] ) ? $quizMeta['available_to'][0] : $defaultQuizOptions['available_to'];
+		$available_to_hour = isset( $quizMeta['available_to_hour'] ) ? $quizMeta['available_to_hour'][0] : $defaultQuizOptions['available_to_hour'];
+		$available_to_min = isset( $quizMeta['available_to_min'] ) ? $quizMeta['available_to_min'][0] : $defaultQuizOptions['available_to_min'];
+
+		$available_from_date = '';
+		if($available_from)
+		{
+			$available_from_date = $available_from.' '.$available_from_hour.':'.$available_from_min.':00';
+		}
+
+		$available_to_date = '';
+		if($available_to)
+		{
+			$available_to_date = $available_to.' '.$available_to_hour.':'.$available_to_min.':00';
+		}
+
+		$from_date_input = array(
+			"type" => "datetime",
+			"value" => $available_from_date,
+			"id" => "available_from",
+			"label" => "Available from (optional)"
+		);
+
+		echo $form->form_item($from_date_input);
+
+		$end_date_input = array(
+			"type" => "datetime",
+			"value" => $available_to_date,
+			"id" => "available_to",
+			"label" => "Available to (optional)"
+		);
+
+		echo $form->form_item($end_date_input);
+
 		echo '<div class="quizOptionsBox">';
-		echo '<label for="availableFromDate">Available From:';
-		echo '<script>
-			jQuery(document).ready(function() {
-				jQuery("#availableFromDate").datepicker({
-					dateFormat : "yy-mm-dd"
-				});
-
-			});
-		</script>';
-		echo '<input type="text" id="availableFromDate" name="availableFromDate" value="'.$availableFromDate.'">';
-		echo '</label>';
-
 
 		echo '<hr/><label for="loginRequired"><input type="checkbox" ';
 		if($loginRequired=="on"){ echo ' checked ';}
@@ -559,18 +593,11 @@ class ekQuizzes_CPT
 		echo '<input type="test" id="maxAttempts" name="maxAttempts" size="2" value="'.$maxAttempts.'" /> ';
 		echo 'Max number of attempts</label><hr/>';
 
-
-
 		echo 'Minimum time between attempts<br/>';
 		echo '<input type="text" size="2" name="attemptIntervalHours" id="attemptIntervalHours" value="'.$attemptIntervalHours.'" />';
 		echo ' hour(s)';
 		echo '<input type="text" size="2" name="attemptIntervalDays" id="attemptIntervalDays" value="'.$attemptIntervalDays.'" />';
 		echo ' day(s)';
-
-
-
-
-
 
 
 		echo '</div>'; // End of hidden participant options when must be logged in
@@ -583,11 +610,11 @@ class ekQuizzes_CPT
 	// Time Limit
 	function  drawTimeLimitMetaBox($post,$metabox)
 	{
-		$questionID = $post->ID;
+		$quiz_id = $post->ID;
 
 		// Get default values and post meta
 		$defaultQuizOptions = $this-> defaultQuizOptions;
-		$quizMeta = get_post_meta($questionID);
+		$quizMeta = get_post_meta($quiz_id);
 		// Set Var name with array key for defaults
 
 		$timeLimit = isset( $quizMeta['timeLimit'] ) ? $quizMeta['timeLimit'][0] : $defaultQuizOptions['timeLimit'];
@@ -640,7 +667,7 @@ class ekQuizzes_CPT
 
 
 
-		// Save metabox data on edit slide
+		// Save metabox data on quiz
 	function savePostMeta ( $postID )
 	{
 		global $post_type;
@@ -689,7 +716,6 @@ class ekQuizzes_CPT
 				{
 					$metaValue = $_POST[$KEY];
 				}
-
 
 				switch ($KEY)
 				{
@@ -1055,6 +1081,16 @@ class ekQuizzes_CPT
 	{
 
 
+		// Does a quiz with this ID exist?
+		$post_type = get_post_type($quizID);
+		if ( $post_type<>"ek_quiz")
+		{
+			$accessCheck[0] = false;
+			$accessCheck[1] = 'This is not a valid quiz ID';
+			return $accessCheck;
+		}
+
+
 		// Create some default vars
 		$defaultQuizOptions = $this-> defaultQuizOptions;
 		$quizMeta = get_post_meta($quizID);
@@ -1071,11 +1107,13 @@ class ekQuizzes_CPT
 		$accessCheck = array();
 		$accessCheck[0] = true; // Allow access by default
 		// Get the current datetime
-		$currentDate = date("Y-m-d H:i:s");
+		$date = new \DateTime("now", new DateTimeZone('Europe/London') );
+		$currentDate =  $date->format('Y-m-d H:i:s');
+
 		$currentDate_TS = strtotime($currentDate); // Create time stamp as well
 
 
-
+		// Create values from the keys
 		foreach($quizMeta as $metaKey => $metaValue){$$metaKey = $metaValue[0];}
 
 		// check if has to be logged in
@@ -1105,7 +1143,12 @@ class ekQuizzes_CPT
 
 			$lastAttemptInfo = end($previousAttempts);
 
-			$lastDateStarted = $lastAttemptInfo['dateStarted'];
+			$lastDateStarted = '';
+			if(is_array($lastAttemptInfo) )
+			{
+				$lastDateStarted = $lastAttemptInfo['dateStarted'];
+
+			}
 
 			// Check difference between attempts
 			$minTimeBetweenAttempts = 0;
@@ -1145,16 +1188,35 @@ class ekQuizzes_CPT
 		}
 
 		// Check the date Available
-		if($availableFromDate)
+		if($available_from)
 		{
-			if($currentDate<$availableFromDate)
+
+			// Create the available from date
+			$available_from_date = $available_from.' '.$available_from_hour.':'.$available_from_min;
+			$available_from_object = new \DateTime($available_from_date);
+			if($currentDate<$available_from_date)
 			{
-				$availableDateStr = strtotime($availableFromDate);
-				//Formats the Date
-				$availableDateStr = date('jS F, Y', $availableDateStr);
+
+				$availableDateStr = $available_from_object->format('l jS F, Y, g:i a');
 
 				$accessCheck[0] = false;
 				$accessCheck[1] = 'This quiz is not available until '.$availableDateStr.'.';
+			}
+		}
+
+		// Check the date to
+		if($available_to)
+		{
+			// Create the available from date
+			$available_to_date = $available_to.' '.$available_to_hour.':'.$available_to_min;
+			$available_to_object = new \DateTime($available_to_date);
+			if($currentDate>$available_to_date)
+			{
+
+				$availableDateStr = $available_from_object->format('jS F, Y, g:i a');
+
+				$accessCheck[0] = false;
+				$accessCheck[1] = 'This quiz is now closed';
 			}
 		}
 
