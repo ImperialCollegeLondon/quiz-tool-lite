@@ -127,6 +127,12 @@ foreach ($questions_attempted_array as $question_id => $question_info)
             // Go through the responses and draw the graph
             $chart_data = array();
 
+
+			$key_string = '<table class="table is-fullwidth">'; // String for the key
+			// Create array of letters
+			$letters = \icl_network\utils::generate_az_array();
+
+			$current_option = 0;
             foreach ($response_options as $option_key => $option_info)
             {
                 $option_value = $option_info['optionValue'];
@@ -144,12 +150,21 @@ foreach ($questions_attempted_array as $question_id => $question_info)
                     $bar_color = "#a11d1d";
                 }
 
+				// Create the graph letter
+				$this_letter = $letters[$current_option];
+
                 // Get the number of responses given
                 $submitted_count_for_this = isset($questions_attempted_array[$question_id]['responses'][$option_key]) ? $questions_attempted_array[$question_id]['responses'][$option_key] : 0;
                 $tooltip = $option_value.' : '.$submitted_count_for_this.' responses';
-                $chart_data[] = array(  'value' => $submitted_count_for_this, 'label' => $option_value, 'tooltip' => $tooltip, 'backgroundColor'=> $bar_color, );
+                $chart_data[] = array(  'value' => $submitted_count_for_this, 'label' => $this_letter, 'tooltip' => $tooltip, 'backgroundColor'=> $bar_color, );
 
+				// Create the key
+				$key_string.='<tr><td style="color:'.$bar_color.'">'.$this_letter.' '.$option_value.'</td></tr>';
+
+				$current_option++;
             }
+
+			$key_string.='</table>';
 
             //echo \icl_network\draw::content_box_open();
             //echo '<h2>'.$question.'</h2>';
@@ -171,6 +186,11 @@ foreach ($questions_attempted_array as $question_id => $question_info)
 			$div.= '<div style="width:500px">';
 			$div.= \icl_network\imperial_chart::draw( $chart_args, 'bar' );
 			$div.= '</div>';
+
+			// Add the legen
+			$div.='<div style="width:70%; text-align:left;">';
+			$div.=$key_string;
+			$div.='</div>';
 			$div.= '</div>';
 			$slider_divs[] = $div;
 
