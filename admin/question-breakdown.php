@@ -42,9 +42,14 @@ foreach ($quiz_attempts as $attempt_info)
 	        $question_id = $question_meta['questionID'];
 
 			$this_response = '';
-			if(array_key_exists($question_id, $answers) )
+
+			// Check the answer array exists, and if so get the response
+			if(is_array($answers) )
 			{
-				$this_response = $answers[$question_id];
+				if(array_key_exists($question_id, $answers) )
+				{
+					$this_response = $answers[$question_id];
+				}
 			}
 
 	        $questions_attempted_array[$question_id]['q_type'] = $q_type;
@@ -102,6 +107,9 @@ foreach ($quiz_attempts as $attempt_info)
 
 // Now go through the master array and count the number of answers for each question
 
+
+
+$slider_divs = array(); // Array of content for the slider
 foreach ($questions_attempted_array as $question_id => $question_info)
 {
     $q_type =$question_info['q_type'];
@@ -143,20 +151,28 @@ foreach ($questions_attempted_array as $question_id => $question_info)
 
             }
 
-            echo \icl_network\draw::content_box_open();
-            echo '<h2>'.$question.'</h2>';
+            //echo \icl_network\draw::content_box_open();
+            //echo '<h2>'.$question.'</h2>';
 
             $chart_args = array(
                 'legend'    => false,
                 'data'    => $chart_data,
             );
 
-            echo '<div style="width:500px">';
-            echo \icl_network\imperial_chart::draw( $chart_args, 'bar' );
-            echo '</div>';
+            //echo '<div style="width:500px">';
+            //echo \icl_network\imperial_chart::draw( $chart_args, 'bar' );
+            //echo '</div>';
 
 
-            echo \icl_network\draw::content_box_close();
+            //echo \icl_network\draw::content_box_close();
+			$div = '';
+			$div.='<div style="display:flex; flex-direction:column; margin-bottom:50px;">';
+			$div.= '<div>'.$question.'</div>';
+			$div.= '<div style="width:500px">';
+			$div.= \icl_network\imperial_chart::draw( $chart_args, 'bar' );
+			$div.= '</div>';
+			$div.= '</div>';
+			$slider_divs[] = $div;
 
 
         break;
@@ -169,5 +185,8 @@ foreach ($questions_attempted_array as $question_id => $question_info)
 }
 
 
+
+
+ echo imperial_slider::draw($slider_divs);
 
 ?>
