@@ -168,7 +168,6 @@ class ekQuiz_queries
 		global $quizAttemptsTable;
 		$SQL='Select * FROM '.$quizAttemptsTable.' Where quizID = '.$quizID.' ORDER by userID';
 
-
 		$rs = $wpdb->get_results( $SQL, ARRAY_A );
 		return $rs;
 

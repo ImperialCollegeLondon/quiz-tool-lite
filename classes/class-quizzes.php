@@ -25,6 +25,7 @@ class ekQuizzes_CPT
 		"allQuestionsPerPage"		=> "on",
 		"questionsPerPage"			=> "",
 		"quizInstructions"			=> "",
+		"is_unavailable" => "",
 
 	);
 
@@ -528,6 +529,10 @@ class ekQuizzes_CPT
 		// Get the question meta
 		$quizMeta = get_post_meta($quiz_id);
 
+
+		// Make the quiz available or not
+		$is_unavailable= isset( $quizMeta['is_unavailable'] ) ? $quizMeta['is_unavailable'][0] : $defaultQuizOptions['is_unavailable'];
+
 		// Get the values for this metabox
 		$loginRequired = isset( $quizMeta['loginRequired'] ) ? $quizMeta['loginRequired'][0] : $defaultQuizOptions['loginRequired'];
 		$maxAttempts = isset( $quizMeta['maxAttempts'] ) ? $quizMeta['maxAttempts'][0] : $defaultQuizOptions['maxAttempts'];
@@ -537,6 +542,8 @@ class ekQuizzes_CPT
 		// Time Limit Meta
 		$timeLimit 	= isset( $quizMeta['timeLimit'] ) ? $quizMeta['timeLimit'][0] : $defaultQuizOptions['timeLimit'];
 		$timeLimitMinutes 	= isset( $quizMeta['timeLimitMinutes'] ) ? $quizMeta['timeLimitMinutes'][0] : $defaultQuizOptions['timeLimitMinutes'];
+
+
 
 
 		// Process the start and end date
@@ -567,7 +574,6 @@ class ekQuizzes_CPT
 			"label" => "Available from (optional)"
 		);
 
-		echo $form->form_item($from_date_input);
 
 		$end_date_input = array(
 			"type" => "datetime",
@@ -576,6 +582,27 @@ class ekQuizzes_CPT
 			"label" => "Available to (optional)"
 		);
 
+
+		// If $is_unavailable is on make it unavaiable
+		$available_style = '';
+		if($is_unavailable=="on")
+		{
+			$available_style = 'display:none';
+
+		}
+		$is_unavailable_input = array(
+			"type" => "checkbox",
+			"value" => $is_unavailable,
+			"id" => "is_unavailable",
+			"label" => "Make quiz unavailable",
+		);
+
+		echo '<div id="is_unavailable_wrap">';
+		echo $form->form_item($is_unavailable_input);
+		echo '</div>';
+
+		echo '<div style="'.$available_style.'" id="availability_options_wrap">';
+		echo $form->form_item($from_date_input);
 		echo $form->form_item($end_date_input);
 
 		echo '<div class="quizOptionsBox">';
@@ -603,6 +630,19 @@ class ekQuizzes_CPT
 		echo '</div>'; // End of hidden participant options when must be logged in
 
 		echo '</div>'; // End of metabox wrap
+
+		echo '</div>';
+
+
+		?>
+		<script>
+		jQuery( "#is_unavailable" ).click(function()
+		{
+			  jQuery("#availability_options_wrap").slideToggle('fast');
+			});
+		</script>
+
+		<?php
 
 
 	}
@@ -1106,6 +1146,18 @@ class ekQuizzes_CPT
 		$quizMeta = get_post_meta($quizID);
 		$accessCheck = array();
 		$accessCheck[0] = true; // Allow access by default
+
+		// Is it set to unavailable?
+		$is_unavailable = isset($quizMeta['is_unavailable'][0]) ? $quizMeta['is_unavailable'][0] : '';
+
+		if($is_unavailable=="on")
+		{
+			$accessCheck[0] = false;
+			$accessCheck[1] = 'This quiz is not available';
+			return $accessCheck;
+		}
+
+
 		// Get the current datetime
 		$date = new \DateTime("now", new DateTimeZone('Europe/London') );
 		$currentDate =  $date->format('Y-m-d H:i:s');
