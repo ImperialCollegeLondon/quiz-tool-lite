@@ -1151,7 +1151,7 @@ class ekQuizDraw
 		         //   $question = apply_filters('the_content', get_post_field('post_content', $question_id));
 				//	$post_id = 302;
 					$question_object = get_post( $question_id );
-					$question = $question_object->post_content;
+					$question =  apply_filters('the_content', $question_object->post_content);
 
 		            // Go through the responses and draw the graph
 		            $chart_data = array();
