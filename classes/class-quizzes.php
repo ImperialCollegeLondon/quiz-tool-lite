@@ -1262,7 +1262,7 @@ class ekQuizzes_CPT
 			// Create the available from date
 			$available_to_date = $available_to.' '.$available_to_hour.':'.$available_to_min;
 			$available_to_object = new \DateTime($available_to_date);
-			if($currentDate>$available_to_date)
+			if($currentDate>$available_to_date && $available_from)
 			{
 
 				$availableDateStr = $available_from_object->format('jS F, Y, g:i a');
