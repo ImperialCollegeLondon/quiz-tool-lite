@@ -225,7 +225,47 @@ class ekQuiz_queries
 		return $newID;
 	}
 
+	/* Generate the number of complete quiz takers, as well ass current quiz takers
+	*/
+	public static function get_quiz_submission_overview($quiz_id)
+	{
+		$attempts = ekQuiz_queries::getQuizResults($quiz_id);
 
+		$completed_count = 0;
+		$participant_count = 0;
+		$incomplete_count = 0;
+		$total_attempts = 0;
+
+		$user_attempts_array = array();
+		foreach ($attempts as $attempt_info)
+		{
+			$user_id = $attempt_info['userID'];
+			$user_attempts_array[$user_id][] = $attempt_info; // ADd this attempt to the user attmpts array
+
+			$date_finished = $attempt_info['dateFinished'];
+			if($date_finished == "0000-00-00 00:00:00")
+			{
+				$incomplete_count++;
+			}
+			else
+			{
+				$completed_count++;
+			}
+			$total_attempts++; // Regardless, up the total attempt count
+		}
+
+		// Count the number of unique users
+		$unique_users = count($user_attempts_array);
+
+		$return_array = array(
+			"completed" => $completed_count,
+			"incomplete" => $incomplete_count,
+			"total_users" => $unique_users,
+			"total_attempts" => $total_attempts,
+		);
+
+		return $return_array;
+	}
 
 } //Close class
 ?>
