@@ -1207,11 +1207,11 @@ class ekQuizDraw
 		            //echo \icl_network\draw::content_box_close();
 					$div = '';
 					$div.='<div class="block">';
-					$div.= '<div class="has-text-weight-bold">Question '.$current_question_number.'</div>';
+					$div.= '<div class="has-text-left has-text-weight-bold block">Question '.$current_question_number.'</div>';
 
 					$div.='<div class="columns">';
 
-					$div.='<div class="column">';
+					$div.='<div class="column pr-5">';
 					$div.= '<div class="has-text-left">'.$question.'</div>';
 					$div.='</div>';
 
