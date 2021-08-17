@@ -1148,7 +1148,10 @@ class ekQuizDraw
 		            $response_options = get_post_meta($question_id, "responseOptions", true);
 
 		            // Get the question
-		            $question = apply_filters('the_content', get_post_field('post_content', $question_id));
+		         //   $question = apply_filters('the_content', get_post_field('post_content', $question_id));
+				//	$post_id = 302;
+					$question_object = get_post( $question_id );
+					$question = $question_object->post_content;
 
 		            // Go through the responses and draw the graph
 		            $chart_data = array();
@@ -1216,7 +1219,7 @@ class ekQuizDraw
 					$div.='</div>';
 
 
-					$div.='<div class="column">';
+					$div.='<div class="column mr-6">';
 					$div.='<div style="width:300px" class="block">';
 					$div.= \icl_network\imperial_chart::draw( $chart_args, 'bar' );
 					$div.= '</div>';
