@@ -1150,10 +1150,8 @@ class ekQuizDraw
 		            // Get the question
 		            $question = apply_filters('the_content', get_post_field('post_content', $question_id));
 
-
 		            // Go through the responses and draw the graph
 		            $chart_data = array();
-
 
 					$key_string = '<table class="table is-fullwidth">'; // String for the key
 					// Create array of letters
@@ -1208,15 +1206,18 @@ class ekQuizDraw
 
 		            //echo \icl_network\draw::content_box_close();
 					$div = '';
-					$div.='<div class="columns is-flex-direction-column p-5">';
 					$div.='<div class="block">';
 					$div.= '<div class="has-text-weight-bold">Question '.$current_question_number.'</div>';
-					$div.= '<div>'.$question.'</div>';
+
+					$div.='<div class="columns">';
+
+					$div.='<div class="column">';
+					$div.= '<div class="has-text-left">'.$question.'</div>';
 					$div.='</div>';
 
 
-
-					$div.='<div style="width:300px">';
+					$div.='<div class="column">';
+					$div.='<div style="width:300px" class="block">';
 					$div.= \icl_network\imperial_chart::draw( $chart_args, 'bar' );
 					$div.= '</div>';
 
@@ -1224,9 +1225,13 @@ class ekQuizDraw
 					$div.='<div class="has-text-left">';
 					$div.=$key_string;
 					$div.= '</div>';
+					$div.='</div>'; // End of right col
 
 
-					$div.= '</div>'; // End of main wrapper columns
+					$div.='</div>';
+
+
+					$div.='</div>';
 
 
 
