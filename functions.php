@@ -49,6 +49,9 @@ class ekQuiz
 
 		// The list of quizzes
 		add_filter( 'the_content', array( 'ekQuizDraw', 'draw_quiz_list'));
+		add_filter( 'the_content', array( 'ekQuizDraw', 'test_s3'));
+
+
 
 		// Legacy Shortcodes
 		add_shortcode('QTL-Question', array('ekQuizDraw','drawLegacyShortcodeQuestion'));

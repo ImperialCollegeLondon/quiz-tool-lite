@@ -995,6 +995,7 @@ class ekQuizDraw
 				}
 				else
 				{
+
 					$quiz_list = ekQuizDraw::quiz_list();
 					return $content . $quiz_list;
 				}
@@ -1003,6 +1004,60 @@ class ekQuizDraw
 		}
 		return $content;
 	}
+
+
+
+	// Draw the quiz list if the page slug is quizzes
+	public static function test_s3($content)
+	{
+		if ( is_page() )
+		{
+			// Get the page slug
+			global $post;
+			$post_slug = $post->post_name;
+			if($post_slug=="s3test")
+			{
+
+				// test
+
+				$test_blog_id = 252;
+
+				$current_blog_id = get_current_blog_id();
+
+				$switched = false;
+
+			//	echo '$current_blog_id = '.$current_blog_id.'<br/>';
+
+				if($test_blog_id<>$current_blog_id)
+				{
+				//	echo 'Switch to '.$test_blog_id.'<br/>';
+					switch_to_blog($test_blog_id);
+					$switched = true;
+				}
+
+				$question_object = get_post( 780 );
+				$test_content = $question_object->post_content;
+
+				//printArray($test_content);
+
+				//echo '$test_content = '.$test_content;
+				
+
+				if($switched==true)
+				{
+
+					restore_current_blog();
+				}
+				return $test_content;
+
+			}
+		}
+		return $content;
+	}
+
+
+
+
 
 	public static function quiz_list()
 	{

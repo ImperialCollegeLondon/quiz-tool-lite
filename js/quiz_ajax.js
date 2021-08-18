@@ -13,7 +13,41 @@ function start_quiz_listen()
 		var quizID = this.id.split("_")[1];
 		//console.log("Start the quiz "+quizID);
 		//var quizID = quizID[1];
-		quizStart(quizID);
+
+		document.getElementById('ek-quizWrapper').innerHTML = "Checking quiz availability...";
+
+		// Check to see if they can still take the quiz
+		// i.e. have they loaded the quiz but clicked start
+
+
+
+		jQuery.ajax({
+			type: 'POST',
+			url: quizPageAjax_params.ajaxurl,
+			data: {
+				"action"		: "check_quiz_access",
+				"quizID"		: quizID,
+				"security"		: quizPageAjax_params.ajax_nonce
+			},
+			success: function(data){
+
+
+				if(data==0)
+				{
+					document.getElementById('ek-quizWrapper').innerHTML = "<div class='has-text-danger'>Sorry, this quiz is no longer available</div>";
+				}
+				else
+				{
+					quizStart(quizID); // Start the actua quiz
+
+				}
+				
+
+			}
+
+		});
+
+
 	});
 
 

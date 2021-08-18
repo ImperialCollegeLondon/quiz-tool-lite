@@ -44,10 +44,14 @@ class ek_quizAjax
 		add_action( 'wp_ajax_duplicateQuestion', array($this, 'duplicateQuestion' ));
 
 
-
+		// Check a user can take a quiz
+		add_action( 'wp_ajax_check_quiz_access', array($this, 'check_quiz_access' ));
+		add_action( 'wp_ajax_check_quiz_access', array($this, 'check_quiz_access' ));
 
 
 	}
+
+
 	public function submitPage()
 	{
 
@@ -418,6 +422,41 @@ class ek_quizAjax
 
 
     }
+
+	public static function check_quiz_access()
+	{
+
+		check_ajax_referer( 'quiz_page_ajax_nonce', 'security' );
+
+		$quiz_id = $_POST['quizID'];
+
+
+		// Get the availability
+		$quiz_object = new ekQuizzes_CPT();
+		$check_access = $quiz_object->checkQuizAccess($quiz_id);
+
+		$access = $check_access[0];
+
+		// If they can access, then let them see the
+		if($access==1)
+		{
+			echo '1';
+			die();
+		}
+
+		// Are they admin?
+		if(current_user_can('delete_pages') )
+		{
+			echo '1';
+			die();
+		}
+
+		// Must be not allowed
+		echo '0';
+		die();
+
+
+	}
 
 } // End Class
 ?>
