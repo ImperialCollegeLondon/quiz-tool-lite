@@ -138,7 +138,7 @@ class ekQuizzes_CPT
 		$columns['shortcode'] = 'Shortcode';
 		$columns['boundaries'] = 'Grade Boundaries';
         $columns['question-results-breakdown'] = 'Question Breakdown';
-        $columns['results'] = 'Results';
+        $columns['results'] = 'Quiz Attempts';
 		//$columns['delete_quiz'] = '';
 		return $columns;
 	}
@@ -186,11 +186,11 @@ class ekQuizzes_CPT
 			break;
 
             case "question-results-breakdown":
-                echo '<a href="options.php?page=ek-quiz-q-breakdown&quiz-id='.$post_ID.'">Question Results</a>';
+                echo '<a href="options.php?page=ek-quiz-q-breakdown&quiz-id='.$post_ID.'">Question Metrics</a>';
             break;
 
 			case "results":
-				echo '<a href="options.php?page=ek-quiz-results&quizID='.$post_ID.'">Results</a>';
+				echo '<a href="options.php?page=ek-quiz-results&quizID='.$post_ID.'">Quiz Attempts</a>';
 			break;
 
 		}

@@ -23,6 +23,8 @@ $quiz_id = $_GET['quiz-id'];
 
 
 
-echo ekQuizDraw::option_count_breakdown($quiz_id);
+
+$this_blog_id = get_current_blog_id();
+echo ekQuizDraw::option_count_breakdown($this_blog_id, $quiz_id);
 
 ?>

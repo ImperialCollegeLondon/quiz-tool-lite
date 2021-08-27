@@ -12,14 +12,14 @@
 
 
     $locale = get_locale();
-    
+
 
 $userID = $_GET['userID'];
 $quizID = $_GET['quizID'];
 echo '<h1>User Attempts</h1>';
 	echo '<a href="edit.php?post_type=ek_quiz">'.ekQuizDraw::backIcon().'Back to Quizzes</a>';
 echo '<table id="attemptsTable">';
-echo '<thead><tr><th>Score</th><th>Time Taken(HIDDEN)</th><th>Time Taken</th><th>Date Started(HIDDEN)</th><th>Date Started</th><th>Date Finished</th><th>Results</th></tr></thead>';
+echo '<thead><tr><th>Score</th><th>Time Taken(HIDDEN)</th><th>Time Taken</th><th>Date Started(HIDDEN)</th><th>Date Started</th><th>Date Finished</th><th>Results</th><th></th></tr></thead>';
 
 $ekQuiz_queries = new ekQuiz_queries();
 $quizAttempts = $ekQuiz_queries->getUserAttempts($quizID, $userID);
@@ -60,6 +60,7 @@ foreach ( $quizAttempts as $attemptInfo )
 	//echo '<td>'.$dateFinished.'</td>';
 	echo '<td>'.$dateFinishedFormat.'</td>';
 	echo '<td><a href="?page=ek-user-attempt&attemptID='.$attemptID.'">View Results</a></td>';
+	echo '<td><a href="'.admin_url("?my-action=quiz-attempt-delete&attempt-id=$attemptID&user-id=$userID&quiz-id=$quizID").'">Delete Attempt</a></td>';
 	echo '</tr>';
 }
 echo '</table>';

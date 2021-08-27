@@ -31,6 +31,7 @@ require_once EK_QUIZ_PATH.'/classes/class-export.php'; # Export Functions
 
 require_once EK_QUIZ_PATH.'/classes/class-upgrade.php'; # UPDATE checker
 
+require_once EK_QUIZ_PATH.'/classes/check-for-actions.php'; # Export Functions
 
 
 /* Helpers */
@@ -46,9 +47,9 @@ $questionTypeNames = array_diff(scandir($qFullDirectory), array('..', '.'));
 
 foreach($questionTypeNames as $qTypeNameString)
 {
-	
+
 	require_once $qFullDirectory.'/'.$qTypeNameString.'/'.$qTypeNameString.'.php'; # Each Q Type Class
-	
+
 	// Include the Ajax File
 //	require_once $qFullDirectory.'/'.$qTypeNameString.'/ajax.php'; # Require Ajax
 

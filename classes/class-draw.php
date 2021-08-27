@@ -1041,7 +1041,7 @@ class ekQuizDraw
 				//printArray($test_content);
 
 				//echo '$test_content = '.$test_content;
-				
+
 
 				if($switched==true)
 				{
@@ -1097,8 +1097,18 @@ class ekQuizDraw
 	}
 
 
-	public static function option_count_breakdown($quiz_id)
+	public static function option_count_breakdown($this_blog_id, $quiz_id)
 	{
+
+		$switched = 'false';
+		$current_blog_id = get_current_blog_id();
+
+		if($this_blog_id<>$current_blog_id)
+		{
+			switch_to_blog($this_blog_id);
+			$switched=true;
+		}
+
 
 		// Get ALL results and add the question IDs to an array
 		// We need to do this as individual question reults are only stored on single question stuff
@@ -1202,11 +1212,16 @@ class ekQuizDraw
 		        case "multiResponse":
 		            $response_options = get_post_meta($question_id, "responseOptions", true);
 
+
+					$current_blog_id = get_current_blog_id();
 		            // Get the question
-		         //   $question = apply_filters('the_content', get_post_field('post_content', $question_id));
+		            $question = apply_filters('the_content', get_post_field('post_content', $question_id));
 				//	$post_id = 302;
-					$question_object = get_post( $question_id );
-					$question =  apply_filters('the_content', $question_object->post_content);
+				//	$question_object = get_post( $question_id );
+
+					//$question = 'Final Test '.$current_blog_id.'<br/>'.apply_filters( 'as3cf_filter_post_local_to_provider', $question );
+
+				//	$question = $question_object->post_content;
 
 		            // Go through the responses and draw the graph
 		            $chart_data = array();
@@ -1269,6 +1284,7 @@ class ekQuizDraw
 
 					$div.='<div class="columns">';
 
+					// Left column
 					$div.='<div class="column pr-5">';
 					$div.= '<div class="has-text-left">'.$question.'</div>';
 					$div.='</div>';
@@ -1286,10 +1302,10 @@ class ekQuizDraw
 					$div.='</div>'; // End of right col
 
 
-					$div.='</div>';
+					$div.='</div>';// End of columns
 
 
-					$div.='</div>';
+					$div.='</div>'; // Ebd of block
 
 
 
@@ -1300,17 +1316,17 @@ class ekQuizDraw
 
 		        break;
 
-
 		    }
-
 
 
 		}
 
-
-
-
 		 $html.= imperial_slider::draw($slider_divs);
+
+		 if($switched==true)
+		 {
+			 restore_current_blog();
+		 }
 		 return $html;
 
 	}

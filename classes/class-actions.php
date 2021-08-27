@@ -36,6 +36,14 @@ class ek_quiz_actions
 		$delete = $wpdb->query("TRUNCATE TABLE $userResponsesTable");
 		$delete = $wpdb->query("TRUNCATE TABLE $quizAttemptsTable");
 	}
+
+	public static function quiz_attempt_delete($attempt_id)
+	{
+		global $wpdb;
+		global $quizAttemptsTable;
+
+		$wpdb->delete($quizAttemptsTable, array('attemptID' => $attempt_id), array('%d'));
+	}
 }
 
 
