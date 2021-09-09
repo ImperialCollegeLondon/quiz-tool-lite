@@ -41,7 +41,7 @@ function start_quiz_listen()
 					quizStart(quizID); // Start the actua quiz
 
 				}
-				
+
 
 			}
 
@@ -87,6 +87,19 @@ function start_quiz_listen()
 
 
 	});
+
+
+
+	/* LIsten for button RESUMING a quiz */
+	//Listener for quiz start button pushed
+	jQuery('.quiz_resume_button').on( 'click', function (  ) {
+
+		var attempt_id = jQuery( this ).attr('data-id'); // Get the draw method attr
+		quiz_resume(attempt_id);
+
+	});
+
+
 
 
 }
@@ -155,6 +168,47 @@ function quizStart(quizID)
 
 
 
+
+}
+
+function quiz_resume(attempt_id)
+{
+
+    document.getElementById('ek-quizWrapper').innerHTML = "Please wait, loading...";
+
+    // Create a quiz layout and Get the attempt ID
+	jQuery.ajax({
+		type: 'POST',
+		url: quizPageAjax_params.ajaxurl,
+		data: {
+			"action"		: "resume_quiz",
+            "attempt_id"		: attempt_id,
+			"security"		: quizPageAjax_params.ajax_nonce
+		},
+		success: function(data){
+
+			var data_object = JSON.parse(data);
+
+
+			qtl_cookie.set_cookie( "qtl_attemptID", attempt_id, 1 );
+
+			//var pageStr = dataObj.pageStr;
+			document.getElementById('ek-quizWrapper').innerHTML = data_object.html;
+
+			var my_seconds = data_object.seconds_left;
+
+			if(my_seconds)
+			{
+
+				jQuery('#quizTimeLimit').show();
+
+				startTimerCountdown(my_seconds);
+			}
+
+
+        }
+
+    });
 
 }
 
@@ -403,6 +457,10 @@ function startTimer(quizID)
 			// UNHIDE the timer div if it exists and start the timer
 			jQuery('#quizTimeLimit').show();
 
+			var my_seconds = quizMinutes * 60;
+
+			 startTimerCountdown(my_seconds);
+
 
 			/* Finally Start the time and show it */
 			// Set the date we're counting down to
@@ -410,63 +468,72 @@ function startTimer(quizID)
 			//quizMinutes=1;
 
 
-			var countDownDate = new Date();
-			countDownDate.setMinutes(countDownDate.getMinutes() + quizMinutes);
-
-			// Update the count down every 1 second
-			var x = setInterval(function() {
-				// Get todays date and time
-				var now = new Date().getTime();
-				// Find the distance between now an the count down date
-				var distance = countDownDate - now;
-				// Time calculations for days, hours, minutes and seconds
-				var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-				var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-				var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-				// Display the result in the element with id="quizTimeLimitRemaining"
-				var timer_str="";
-				if(hours>=1)
-				{
-				  timer_str =  hours + "h " + minutes + "m " + seconds + "s ";
-				}
-				else
-				{
-				  timer_str =   minutes + "m " + seconds + "s ";
-				}
-				document.getElementById("quizTimeLimitRemaining").innerHTML = timer_str;
-
-
-				if(quizHasFinished==true)
-				{
-					clearInterval(x);
-
-				}
-
-				// If the count down is finished, write some text
-				if (distance <= 0) {
-				clearInterval(x);
-
-
-				// Only show the popup if ths quiz has yet to be submitted
-
-				if(quizHasFinished==false)
-				{
-
-					document.getElementById("quizTimeLimitRemaining").innerHTML = "Finished";
-					jQuery('#quiz-timer-finish-modal').show();
-				}
-
-
-
-
-				}
-			}, 1000);
 		}
 
 	});
 
 
 
+
+
+}
+
+
+function startTimerCountdown(countdown_seconds)
+{
+
+
+	var countDownDate = new Date();
+	countDownDate.setSeconds(countDownDate.getSeconds() + countdown_seconds);
+
+	// Update the count down every 1 second
+	var x = setInterval(function() {
+		// Get todays date and time
+		var now = new Date().getTime();
+		// Find the distance between now an the count down date
+		var distance = countDownDate - now;
+		// Time calculations for days, hours, minutes and seconds
+		var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+		// Display the result in the element with id="quizTimeLimitRemaining"
+		var timer_str="";
+		if(hours>=1)
+		{
+		  timer_str =  hours + "h " + minutes + "m " + seconds + "s ";
+		}
+		else
+		{
+		  timer_str =   minutes + "m " + seconds + "s ";
+		}
+		document.getElementById("quizTimeLimitRemaining").innerHTML = timer_str;
+
+
+		if(quizHasFinished==true)
+		{
+			clearInterval(x);
+
+		}
+
+		// If the count down is finished, write some text
+		if (distance <= 0) {
+		clearInterval(x);
+
+
+		// Only show the popup if ths quiz has yet to be submitted
+
+		if(quizHasFinished==false)
+		{
+
+			document.getElementById("quizTimeLimitRemaining").innerHTML = "Finished";
+			jQuery('#quiz-timer-finish-modal').show();
+		}
+
+
+
+
+		}
+	}, 1000);
 
 
 }

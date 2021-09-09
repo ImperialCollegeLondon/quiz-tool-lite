@@ -3,7 +3,6 @@
 $ekQuiz = new ekQuiz();
 class ekQuiz
 {
-	var $version = '0.1';
 
 	public static $defaults =array
 	(
@@ -77,6 +76,7 @@ class ekQuiz
 		/* add jquery ui datepicker and theme */
 		// get the jquery ui object
 		global $wp_scripts;
+		global $qtl_version;
 		$queryui = $wp_scripts->query('jquery-ui-core');
 
 		// load the jquery ui theme
@@ -84,14 +84,14 @@ class ekQuiz
 		wp_enqueue_style('jquery-ui-smoothness', $url, false, null);
 		wp_enqueue_style( 'ek-quiz-admin-css', EK_QUIZ_PLUGIN_URL . '/css/admin.css' );
 
-		wp_enqueue_script('ek_quiz_response_edit_js', EK_QUIZ_PLUGIN_URL.'/js/response_option_edit.js', array( 'jquery' ) ); #JS for managing resopnse options
-		wp_enqueue_script('ek_quiz_quiz_edit_js', EK_QUIZ_PLUGIN_URL.'/js/quiz_settings_page.js', array( 'jquery' ) ); #JS for managing quiz options
+		wp_enqueue_script('ek_quiz_response_edit_js', EK_QUIZ_PLUGIN_URL.'/js/response_option_edit.js', array( 'jquery' ), $qtl_version ); #JS for managing resopnse options
+		wp_enqueue_script('ek_quiz_quiz_edit_js', EK_QUIZ_PLUGIN_URL.'/js/quiz_settings_page.js', array( 'jquery' ), $qtl_version ); #JS for managing quiz options
 
 
 		wp_enqueue_style( 'ek-quiz-font-awesome' );
 
 		// Admin JS
-		wp_enqueue_script('ek_quiz_admin_js', EK_QUIZ_PLUGIN_URL.'/js/admin.js', array( 'jquery' ) ); #Admin JS
+		wp_enqueue_script('ek_quiz_admin_js', EK_QUIZ_PLUGIN_URL.'/js/admin.js', array( 'jquery' ), $qtl_version ); #Admin JS
 
 
 
@@ -124,21 +124,24 @@ class ekQuiz
 
 	function frontendEnqueues ()
 	{
+		global $qtl_version;
 
 		// Register question JS front end
-		wp_register_script('ek_quiz_js', EK_QUIZ_PLUGIN_URL.'/js/questions_frontend.js', array( 'jquery' ) );
+		wp_register_script('ek_quiz_js', EK_QUIZ_PLUGIN_URL.'/js/questions_frontend.js', array( 'jquery' ), $qtl_version );
 
 		// Register Ajax script for front end
-		wp_register_script('ek_quiz_single_question_ajax', EK_QUIZ_PLUGIN_URL.'/js/question_submit_ajax.js', array( 'jquery' ) ); # AJAX JS for submitting single questions
+		wp_register_script('ek_quiz_single_question_ajax', EK_QUIZ_PLUGIN_URL.'/js/question_submit_ajax.js', array( 'jquery' ), $qtl_version ); # AJAX JS for submitting single questions
 
 	}
 
 
 	function jointEnqueues()
 	{
+		global $qtl_version;
+
 		//Scripts
 		// Custom Styles
-		wp_register_style( 'ek-quiz-css', EK_QUIZ_PLUGIN_URL . '/css/styles.css' );
+		wp_register_style( 'ek-quiz-css', EK_QUIZ_PLUGIN_URL . '/css/styles.css', array(), $qtl_version );
 
 
 		// Font Awesome CSS

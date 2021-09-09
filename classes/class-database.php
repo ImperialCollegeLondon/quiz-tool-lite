@@ -26,20 +26,19 @@ class ek_quiz_database {
 	// Function to check latest version and then update DB if needed
 	function myplugin_update_db_check()
 	{
-		global $ekQuiz;
-		$ekQuizVersion = $ekQuiz->version;
+		global $qtl_version;
 
 		$savedVersion = get_option( 'ekQuizVersion' );
 
 		if($savedVersion=="")
 		{
-			update_option( 'ekQuizVersion', $ekQuizVersion );
+			update_option( 'ekQuizVersion', $qtl_version );
 			$this->installDB();
 		}
-		elseif ( $savedVersion< $ekQuizVersion )
+		elseif ( $savedVersion< $qtl_version )
 		{
 			// Update version op
-			update_option( 'ekQuizVersion', $ekQuizVersion );
+			update_option( 'ekQuizVersion', $qtl_version );
 			$this->installDB();
 		}
 
@@ -51,7 +50,7 @@ class ek_quiz_database {
 	//~~~~~
 	function installDB()
 	{
-		
+
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		// Get plugin version and set option to current version
 		global $wpdb;

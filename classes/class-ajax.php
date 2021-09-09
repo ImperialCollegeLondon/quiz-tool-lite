@@ -49,6 +49,10 @@ class ek_quizAjax
 		add_action( 'wp_ajax_check_quiz_access', array($this, 'check_quiz_access' ));
 
 
+
+		add_action( 'wp_ajax_resume_quiz', array($this, 'resume_quiz' ));
+
+
 	}
 
 
@@ -455,6 +459,102 @@ class ek_quizAjax
 		echo '0';
 		die();
 
+
+	}
+
+	// Resumes a quiz if disconected or incomplete etc
+	public static function resume_quiz()
+	{
+		check_ajax_referer( 'quiz_page_ajax_nonce', 'security' );
+		$attempt_id = $_POST['attempt_id'];
+
+		$return_array = array(); // Create return array for the ajax with HTML and seconds_left
+		$return_array['html'] = '';
+		$return_array['seconds_left'] = '';
+
+
+		// Get the info about this attempt id
+		$attempt_info = \ekQuiz_queries::get_attempt_info($attempt_id);
+
+		// Can they re do this?
+		$date_started = $attempt_info->dateStarted;
+		$date_finished = $attempt_info->dateFinished;
+		$user_id = $attempt_info->userID;
+		$quiz_id = $attempt_info->quizID;
+
+		if($date_finished<>"0000-00-00 00:00:00")
+		{
+			$return_array['html'] = 'This attempt has already been completed';
+			echo json_encode($return_array);
+			die();
+		}
+
+		$current_user_id = get_current_user_id();
+		if($current_user_id<>$user_id)
+		{
+			$return_array['html'] = 'This is not your attempt!';
+			echo json_encode($return_array);
+			die();
+		}
+
+		// TO DO CHECK THE TIME LIMIT
+		// Does the quiz have a time limit?
+		$quiz_meta = get_post_meta($quiz_id);
+
+		foreach($quiz_meta as $key => $value)
+		{
+			$$key = $value[0];
+		}
+
+		$ekQuizzes_CPT = new ekQuizzes_CPT();
+		$check_access = $ekQuizzes_CPT->checkQuizAccess($quiz_id);
+		if($check_access[0]==false)
+		{
+
+			if($check_access[2]<>"max-attempts-exceeded")
+			{
+				$return_array['html'] = $check_access[1];
+				echo json_encode($return_array);
+				die();
+			}
+		}
+
+		// Check the time limit
+		if($timeLimit=="on")
+		{
+			$now = date("Y-m-d H:i:s");
+			$time_since_started = \ekQuiz_utils::dateDiff($date_started, $now);
+			$seconds_since_started = $time_since_started['seconds'];
+
+
+			// Calculate the seconds LEFT
+			$seconds_left = ($timeLimitMinutes*60)-$seconds_since_started;
+
+			if($seconds_left<0)
+			{
+				$return_array['html'] = 'You have no time left on this quiz';
+				echo json_encode($return_array);
+				die();
+			}
+
+			$return_array['seconds_left'] = $seconds_left;
+		}
+
+
+
+		// Now draw the first page of the quiz
+		$args = array(
+			"quizID"			=> $quiz_id,
+			"currentPage"		=> 1,
+			"attemptID"         => $attempt_id,
+		);
+
+		// Returns array of quiz and if answer is correct so get the qStr KEY
+		$quiz_html = \ekQuizDraw::drawQuizPage($args);
+		$return_array['html'] = $quiz_html;
+		echo json_encode($return_array);
+
+		die();
 
 	}
 

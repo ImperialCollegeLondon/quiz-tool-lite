@@ -183,6 +183,16 @@ class ekQuiz_queries
 		return $rs;
 	}
 
+
+	public static function get_attempt_info($attempt_id)
+	{
+		global $wpdb;
+		global $quizAttemptsTable;
+		$SQL='Select * FROM '.$quizAttemptsTable.' Where attemptID = '.$attempt_id;
+		$rs = $wpdb->get_row( $SQL  );
+		return $rs;
+	}
+
 	public static function getUserResponse($questionID, $userID)
 	{
 		global $wpdb;

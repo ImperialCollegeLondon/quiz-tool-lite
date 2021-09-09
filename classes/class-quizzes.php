@@ -1127,6 +1127,7 @@ class ekQuizzes_CPT
 		{
 			$accessCheck[0] = false;
 			$accessCheck[1] = 'This is not a valid quiz ID';
+			$accessCheck[2] = 'invalid-id';
 			return $accessCheck;
 		}
 
@@ -1154,6 +1155,8 @@ class ekQuizzes_CPT
 		{
 			$accessCheck[0] = false;
 			$accessCheck[1] = 'This quiz is not available';
+			$accessCheck[2] = 'unavailable';
+
 			return $accessCheck;
 		}
 
@@ -1176,6 +1179,8 @@ class ekQuizzes_CPT
 			{
 				$accessCheck[0] = false;
 				$accessCheck[1] = 'You must be logged in to take this quiz';
+				$accessCheck[2] = 'login-required';
+
 				return $accessCheck;
 			}
 
@@ -1190,6 +1195,8 @@ class ekQuizzes_CPT
 			{
 				$accessCheck[0] = false;
 				$accessCheck[1] = 'You can only make '.$maxAttempts.' attempt(s) at this quiz.';
+				$accessCheck[2] = 'max-attempts-exceeded';
+
 				return $accessCheck;
 			}
 
@@ -1232,6 +1239,8 @@ class ekQuizzes_CPT
 
 					$accessCheck[0] = false;
 					$accessCheck[1] = 'You can next take this test in <b>'.$days.' day(s),  '.$hours.' hours and '.$min.' minutes</b>';
+					$accessCheck[2] = 'attempt-delay-exceeded';
+
 					return $accessCheck;
 
 				}
@@ -1253,6 +1262,8 @@ class ekQuizzes_CPT
 
 				$accessCheck[0] = false;
 				$accessCheck[1] = 'This quiz is not available until '.$availableDateStr.'.';
+				$accessCheck[2] = 'unavailable';
+
 			}
 		}
 
@@ -1269,11 +1280,61 @@ class ekQuizzes_CPT
 
 				$accessCheck[0] = false;
 				$accessCheck[1] = 'This quiz is now closed';
+				$accessCheck[2] = 'unavailable';
+
 			}
 		}
 
 		// If we get this far they can take the quiz
 		return $accessCheck;
+	}
+
+	public static function get_valid_incomplete_attempts($quiz_id)
+	{
+		$html = '';
+		// Get current user ID
+		$current_user_id = get_current_user_id();
+		if($current_user_id==0)
+		{
+			return;
+		}
+
+		$attempts = \ekQuiz_queries::getUserAttempts($quiz_id, $current_user_id);
+		$incomplete_attempts = array();
+		// TO DO CHECK IF TIME LIMIT - if time limit set calculate when the quiz QOULD have finished and only allow that with the new time
+		foreach ($attempts as $attempt_info)
+		{
+			$date_finished = $attempt_info['dateFinished'];
+			if($date_finished=="0000-00-00 00:00:00")
+			{
+				$incomplete_attempts[] = array(
+					"start_date" => $attempt_info['dateStarted'],
+					"attempt_id" => $attempt_info['attemptID'],
+				);
+			}
+		}
+
+		// Check for time limit. If it exists, then do not allow a restart
+		$incomplete_attempts_count = count($incomplete_attempts);
+		if($incomplete_attempts_count>0)
+		{
+			$html = '<div>You have '.$incomplete_attempts_count.' in complete attempts</div>';
+			$html.='<table class="table">';
+
+			foreach ($incomplete_attempts as $attempt_info)
+			{
+				$attempt_id= $attempt_info['attempt_id'];
+				$start_date= $attempt_info['start_date'];
+
+				$start_date_str = \icl_network\date_utils::format_datetime($start_date);
+				$html.='<tr><td>'.$start_date_str.'</td><td><a href="#" data-id="'.$attempt_id.'" class="button quiz_resume_button">Click here to resume</a></td></tr>';
+
+			}
+			$html.='</table>';
+
+		}
+		return $html;
+
 	}
 
 

@@ -10,6 +10,11 @@ License: GPL
 GitHub Plugin URI: https://github.com/ImperialCollegeLondon/quiz-tool-lite
 */
 
+
+global $qtl_version;
+$qtl_version = 2.0;
+
+
 date_default_timezone_set('UTC');
 
 // Global defines
