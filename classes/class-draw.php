@@ -372,7 +372,7 @@ class ekQuizDraw
 
 		// Also check for any incomplete attempts and let them continue
 		$qStr.=$valid_incomplete_attempts = $ekQuizzes_CPT->get_valid_incomplete_attempts($quizID);
-		
+
 
 		if($allowAttempt==true)
 		{

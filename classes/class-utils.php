@@ -328,6 +328,11 @@ if (!class_exists('ekQuiz_utils'))
 
 			$correctFeedback = get_post_meta($questionID, 'correctFeedback', true);
 			$incorrectFeedback = get_post_meta($questionID, 'incorrectFeedback', true);
+			$correctFeedback = apply_filters( 'as3cf_filter_post_local_to_provider', $correctFeedback );
+			$incorrectFeedback = apply_filters( 'as3cf_filter_post_local_to_provider', $incorrectFeedback );
+
+
+
 
 			$feedbackArray = array();
 

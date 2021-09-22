@@ -342,7 +342,9 @@ class ekQuestions_CPT
 		}
 
 		$correctFeedback = get_post_meta($post->ID,'correctFeedback',true);
+		$correctFeedback = apply_filters( 'as3cf_filter_post_local_to_provider', $correctFeedback );
 		$incorrectFeedback = get_post_meta($post->ID,'incorrectFeedback',true);
+		$incorrectFeedback = apply_filters( 'as3cf_filter_post_local_to_provider', $incorrectFeedback );
 
 
 		echo '<h1>'.$title.'</h1>';
