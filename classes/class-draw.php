@@ -1086,13 +1086,27 @@ class ekQuizDraw
 		{
 			$quiz_id = $quiz_info->ID;
 			$quiz_access = $ekQuizzes_CPT->checkQuizAccess($quiz_id);
-			$allow_quiz = $quiz_access[0];
+			$show_quiz = $quiz_access[0];
+
+			$reject_reason = '';
+			if(isset($quiz_access[2] ) )
+			{
+				$reject_reason = $quiz_access[2];
+			}
+
 			$quiz_name = $quiz_info->post_title;
 
-			if($allow_quiz)
+			if($reject_reason=="max-attempts-exceeded") // If attempts exceedded, show the quiz anyway as it won't let them take it
+			{
+				$show_quiz = 1;
+			}
+
+			if($show_quiz)
 			{
 				$html.='<tr>';
-				$html.='<td class="is-size-4"><a href="?quiz-id='.$quiz_id.'">'.$quiz_name.'</a></td>';
+				$html.='<td class="is-size-4"><a href="?quiz-id='.$quiz_id.'">'.$quiz_name.'</a>';
+
+				$html.='</td>';
 				$html.='</tr>';
 			}
 		}
