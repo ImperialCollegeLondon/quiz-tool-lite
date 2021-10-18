@@ -45,7 +45,6 @@ class ekPots_CPT
 
 
 
-
 	}
 
 
@@ -252,6 +251,8 @@ class ekPots_CPT
 
 	// Remove the quick edit from this post type
 	function custom_quick_links( $actions = array(), $post = null ) {
+
+
 		// Abort if the post type is not "ek_question"
 		if ( ! is_post_type_archive( 'ek_pot' ) ) {
 			return $actions;
@@ -271,8 +272,10 @@ class ekPots_CPT
         // Remove the Bin options
         if ( isset( $actions['trash'] ) )
         {
-            unset( $actions['trash'] );	// view
+        //    unset( $actions['trash'] );	// view
         }
+
+
 
 		// Return the set of links without Quick Edit
 		return $actions;
@@ -336,8 +339,6 @@ class ekPots_CPT
 
 
     }
-
-
 
 
 

@@ -156,6 +156,7 @@ class ekQuizzes_CPT
 
 				$useQuestionPots = get_post_meta($post_ID, 'useQuestionPots', true);
 				$myQuestionPotListValues = get_post_meta($post_ID, 'myQuestionPotListValues', true);
+
 				$totalQcount = 0;
 				if($useQuestionPots==1)
 				{
@@ -882,7 +883,6 @@ class ekQuizzes_CPT
 
 
 
-
 	}
 	function drawBoundariesPage	()
 	{
@@ -1111,6 +1111,12 @@ class ekQuizzes_CPT
 		{
 			unset( $actions['view'] );	// view
 		}
+
+		// ADd the clone option
+		$quiz_id = $post->ID;
+
+		$url = 'admin-post.php?action=quiz_clone&quiz-id='.$quiz_id;
+		$actions['clone-pot'] = '<a href="'. $url .'">Clone Quiz</a>';
 
 		// Return the set of links without Quick Edit
 		return $actions;
