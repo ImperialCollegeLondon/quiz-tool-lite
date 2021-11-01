@@ -69,6 +69,8 @@ class ek_quiz_database {
 		attemptNumber mediumint(9),
 		score mediumint(9),
 		userResponses text,
+		INDEX quizID (quizID),
+		INDEX userID (userID),
 		PRIMARY KEY (attemptID)
 		) ".$charSet;
 		dbDelta( $sql );

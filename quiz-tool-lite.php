@@ -12,7 +12,7 @@ GitHub Plugin URI: https://github.com/ImperialCollegeLondon/quiz-tool-lite
 
 
 global $qtl_version;
-$qtl_version = 2.0;
+$qtl_version = "2.1";
 
 
 date_default_timezone_set('UTC');
