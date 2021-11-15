@@ -1260,11 +1260,11 @@ class ekQuizDraw
 
 		                if($is_correct==1)
 		                {
-		                    $bar_color = "#44cc3f";
+		                    $bar_color = "#336699";
 		                }
 		                else
 		                {
-		                    $bar_color = "#a31f1f";
+		                    $bar_color = "#C81E78";
 		                }
 
 						// Create the graph letter
