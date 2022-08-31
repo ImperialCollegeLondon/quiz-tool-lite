@@ -3,8 +3,12 @@ class ekQuizDraw
 {
 
 
-	static function drawUserResults($quizID, $CSV=false)
+	static function drawUserResults($quizID, $args = [])
 	{
+
+		$students_only = isset($args['students_only']) ? $args['students_only'] : false;
+
+		$CSV = isset($args['CSV']) ? $args['CSV'] : false;
 
 		$html='';
 		$csvArray = array();
@@ -12,6 +16,8 @@ class ekQuizDraw
 		//qtl_utils::loadDataTables();
 
 		$ekQuiz_queries = new ekQuiz_queries();
+
+		global $wp_roles;
 
 		// Get an array of results with username as key
 		// Get the results
@@ -37,8 +43,8 @@ class ekQuizDraw
 		}
 
 		$html.= '<table id="userTable">';
-		$html.= '<thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Highest Score</th><th>Number of attempts</th><th></th></tr></thead>';
-		$csvArray[] = array("Last Name", "First Name", "Username", "Role", "Highest Score", "Attempts");
+		$html.= '<thead><tr><th>Name</th><th>Username</th><th>CID</th><th>Role</th><th>Highest Score</th><th>Number of attempts</th><th></th></tr></thead>';
+		$csvArray[] = array("Last Name", "First Name", "Username", "CID", "Role", "Highest Score", "Attempts");
 
 
 
@@ -52,14 +58,13 @@ class ekQuizDraw
 			$firstName= esc_html( $userInfo->first_name );
 			$surname= esc_html( $userInfo->last_name );
 			$username = $userInfo->user_login;
-			$roles = $userInfo->roles;
-			if($roles)
+			$cid = $userInfo->cid;
+			$role_id = isset($userInfo->roles[0]) ? $userInfo->roles[0] : '';
+
+			$userlevel =  translate_user_role( $wp_roles->roles[ $role_id ]['name'] );
+			if($students_only && (strtolower($userlevel)<>"student" && strtolower($userlevel)<>"subscriber") )
 			{
-				$userlevel = $roles[0];
-			}
-			else
-			{
-				$userlevel = "";
+				continue;
 			}
 
 			// Get the attempt info from the lookup table
@@ -81,18 +86,26 @@ class ekQuizDraw
 			$attemptCount = count($userAttemptArray);
 			if($attemptCount==0){$maxScore = '-';}
 
-
-
 			if(!$maxScore){$maxScore = "-";}
 			$html.= '<tr>';
 			$html.= '<td>'.$surname.', '.$firstName.'</td>';
 			$html.= '<td>'.$username.'</td>';
+			$html.= '<td>'.$cid.'</td>';
 			$html.= '<td>'.$userlevel.'</td>';
 			$html.= '<td>'.$maxScore.'</td>';
 			$html.= '<td>'.$attemptCount.'</td>';
-			$html.= '<td><a href="?page=ek-user-attempts&quizID='.$quizID.'&userID='.$userID.'">Results</a></td>';
+			$html.= '<td>';
+			if($attemptCount>0)
+			{
+				$html.='<a href="?page=ek-user-attempts&quizID='.$quizID.'&userID='.$userID.'">Results</a>';
+			}
+			else
+			{
+				$html.='-';
+			}
+			$html.='</td>';
 			$html.= '</tr>';
-			$csvArray[] = array ($surname,$firstName, $username, $userlevel,$maxScore,$attemptCount);
+			$csvArray[] = array ($surname,$firstName, $username, $cid, $userlevel,$maxScore,$attemptCount);
 
 
 
@@ -113,7 +126,7 @@ class ekQuizDraw
 						"bJQueryUI": true,
 						"sPaginationType": "full_numbers",
 						"iDisplayLength": 50, // How many numbers by default per page
-						"order": [[2, "desc"]]
+						"order": [[0, "asc"]]
 					});
 				}
 
@@ -735,16 +748,12 @@ class ekQuizDraw
 
 		$userID = get_current_user_id();
 
-
-
 		if($userID)
 		{
 			$ekQuiz_queries = new ekQuiz_queries();
 			$responseInfo = $ekQuiz_queries->getUserResponse($questionID, $userID);
 			$response = $responseInfo['userResponse'];
 			$response =  wpautop(ekQuiz_utils::formatResponse($response));
-
-
 
 			// if its radio then get the radio value
 			if($qType=="singleResponse")
@@ -1283,7 +1292,7 @@ class ekQuizDraw
 
 					$key_string.='</table>';
 
-		            //echo \icl_network\draw::content_box_open();
+		            //echo \icl_network\draw::content_box_open('content');
 		            //echo '<h2>'.$question.'</h2>';
 
 		            $chart_args = array(

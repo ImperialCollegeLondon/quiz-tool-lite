@@ -16,14 +16,55 @@ $quizID="";
 if(isset($_GET['quizID']))
 {
 	$quizID = $_GET['quizID'];
+	$view = isset($_GET['view']) ? $_GET['view'] : '';
+
+	$args = [];
+	if($view=="students")
+	{
+		$args['students_only'] = true;
+	}
 
 
 	$quizName = get_the_title($quizID);
-	echo '<h2>'.$quizName.' : Results</h2>';
+	echo '<h1>'.$quizName.' : Results</h1>';
+	echo '<div class="block">';
 	echo '<a href="edit.php?post_type=ek_quiz"><i class="fas fa-chevron-circle-left"></i> Pick a different quiz</a>';
-	echo '<hr/><a href="?page=ek-quiz-results&quizID='.$quizID.'&myAction=exportQuizResultsCSV" class="button-primary">Download as CSV</a>';
+	echo '</div>';
 
-	echo ekQuizDraw::drawUserResults($quizID);
+	echo '<div class="box">';
+
+	echo '<div class="columns is-desktop">';
+	echo '<div class="column">';
+	echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'&view='.$view.'&myAction=exportQuizResultsCSV" class="button is-primary">Download this data</a>';
+	echo '</div>';
+
+	echo '<div class="column aR is-size-4">';
+	if($view=="")
+	{
+		echo 'Viewing all users';
+	}
+	else
+	{
+		echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'">View all users</a>';
+	}
+
+	echo ' | ';
+
+
+	if($view=="students")
+	{
+		echo 'Viewing only students';
+	}
+	else
+	{
+		echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'&view=students">View only students</a>';
+	}
+
+	echo '</div>';
+	echo '</div>';
+
+	echo ekQuizDraw::drawUserResults($quizID, $args);
+	echo '</div>';
 }
 
 
