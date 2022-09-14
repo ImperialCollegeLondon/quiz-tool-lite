@@ -967,7 +967,7 @@ class ekQuizzes_CPT
 						"exclude_reflective"	=> true,
 					);
 
-					//$ekQuiz_queries = new ekQuiz_queries();
+					$ekQuiz_queries = new ekQuiz_queries();
 					$potQuestions = $ekQuiz_queries::getPotQuestions($args);
 					//printArray($potQuestions);
 
