@@ -49,6 +49,8 @@ class ekQuizDraw
 
 
 		$blogusers = get_users();
+		// GEt al users as a lookup
+		$all_users_lookup = \icl_network\user_queries::get_all_users_username_keyed();
 
 		// Array of WP_User objects.
 		foreach ( $blogusers as $userInfo )
@@ -58,8 +60,11 @@ class ekQuizDraw
 			$firstName= esc_html( $userInfo->first_name );
 			$surname= esc_html( $userInfo->last_name );
 			$username = $userInfo->user_login;
-			$cid = $userInfo->cid;
 			$role_id = isset($userInfo->roles[0]) ? $userInfo->roles[0] : '';
+
+			// Get the CID from icl meta
+			$icl_user_meta = $all_users_lookup[$username];
+			$cid = $icl_user_meta->cid;
 
 			$userlevel =  translate_user_role( $wp_roles->roles[ $role_id ]['name'] );
 			if($students_only && (strtolower($userlevel)<>"student" && strtolower($userlevel)<>"subscriber") )
