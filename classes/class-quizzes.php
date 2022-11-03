@@ -592,11 +592,20 @@ class ekQuizzes_CPT
 
 		}
 		$is_unavailable_input = array(
-			"type" => "checkbox",
+			"type" => "checkbox_toggle",
 			"value" => $is_unavailable,
 			"id" => "is_unavailable",
 			"label" => "Make quiz unavailable",
 		);
+
+		$login_required_input = array(
+			"type" => "checkbox_toggle",
+			"value" => $loginRequired,
+			"id" => "loginRequired",
+			"label" => "Participants must be logged in",
+		);
+
+
 
 		echo '<div id="is_unavailable_wrap">';
 		echo $form->form_item($is_unavailable_input);
@@ -608,10 +617,16 @@ class ekQuizzes_CPT
 
 		echo '<div class="quizOptionsBox">';
 
-		echo '<hr/><label for="loginRequired"><input type="checkbox" ';
-		if($loginRequired=="on"){ echo ' checked ';}
-		echo 'name="loginRequired" id="loginRequired" />';
-		echo ' Participants must be logged in</label>';
+		echo '<hr/>';
+
+		//<label for="loginRequired"><input type="checkbox" ';
+		//if($loginRequired=="on"){ echo ' checked ';}
+		//echo 'name="loginRequired" id="loginRequired" />';
+		//echo ' Participants must be logged in</label>';
+
+		echo $form->form_item($login_required_input);
+
+
 
 		echo '<div id="loginRequiredOptions"';
 		if($loginRequired<>"on"){ echo ' style="display:none" ';}

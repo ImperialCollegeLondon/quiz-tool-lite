@@ -31,14 +31,14 @@ if(isset($_GET['quizID']))
 	echo '<a href="edit.php?post_type=ek_quiz"><i class="fas fa-chevron-circle-left"></i> Pick a different quiz</a>';
 	echo '</div>';
 
-	echo '<div class="box">';
+	echo '<div class="box is-size-4">';
 
-	echo '<div class="columns is-desktop">';
-	echo '<div class="column">';
-	echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'&view='.$view.'&myAction=exportQuizResultsCSV" class="button is-primary">Download this data</a>';
-	echo '</div>';
+	//echo '<div class="columns is-desktop">';
+	//echo '<div class="column">';
+	//echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'&view='.$view.'&myAction=exportQuizResultsCSV" class="button is-primary">Download this data</a>';
+	//echo '</div>';
 
-	echo '<div class="column aR is-size-4">';
+//	echo '<div class="column aR is-size-4">';
 	if($view=="")
 	{
 		echo 'Viewing all users';
@@ -60,8 +60,9 @@ if(isset($_GET['quizID']))
 		echo '<a href="?page=ek-quiz-results&quizID='.$quizID.'&view=students">View only students</a>';
 	}
 
+	//echo '</div>';
 	echo '</div>';
-	echo '</div>';
+	echo '<div class="box">';
 
 	echo ekQuizDraw::drawUserResults($quizID, $args);
 	echo '</div>';
@@ -70,3 +71,38 @@ if(isset($_GET['quizID']))
 
 
 ?>
+<script>
+jQuery(document).ready( function () {
+
+	var table = jQuery('#userTable').DataTable( {
+		"bAutoWidth": true,
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers",
+		"iDisplayLength": 50, // How many numbers by default per page
+		"order": [[0, "asc"]],
+		buttons: [
+		{
+			extend: 'copy',
+			text: '<span class="icon"><i class="fas fa-copy"></i></span><span>Copy to clipboard</span>',
+			className: 'button',
+
+		},
+		{
+			extend: 'excel',
+			text: '<span class="icon"><i class="fas fa-file-excel"></i></span><span>Download Excel</span>',
+			className: 'button',
+
+		},
+	]
+	} );
+
+	// Insert at the top left of the table
+	table.buttons().container()
+		.appendTo( jQuery('div.column.is-half', table.table().container()).eq(0) );
+
+} );
+
+
+
+
+</script>

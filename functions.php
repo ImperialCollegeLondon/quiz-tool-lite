@@ -103,9 +103,9 @@ class ekQuiz
 
 
 		// Data tables
-		wp_enqueue_script('ek_datatables-js', '//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', array( 'jquery' ) );
-		wp_enqueue_style( 'ek-datatables-css-js', '//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css' );
-		wp_enqueue_style( 'ek-datatables', EK_QUIZ_PLUGIN_URL . '/css/datatables.css' );
+		//wp_enqueue_script('ek_datatables-js', '//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', array( 'jquery' ) );
+		//wp_enqueue_style( 'ek-datatables-css-js', '//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css' );
+		//wp_enqueue_style( 'ek-datatables', EK_QUIZ_PLUGIN_URL . '/css/datatables.css' );
 
 
 		// Localise the admin JS for Ajax

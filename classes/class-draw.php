@@ -42,7 +42,7 @@ class ekQuizDraw
 
 		}
 
-		$html.= '<table id="userTable">';
+		$html.= '<table id="userTable" class="table is-fullwidth">';
 		$html.= '<thead><tr><th>Name</th><th>Username</th><th>CID</th><th>Role</th><th>Highest Score</th><th>Number of attempts</th><th></th></tr></thead>';
 		$csvArray[] = array("Last Name", "First Name", "Username", "CID", "Role", "Highest Score", "Attempts");
 
@@ -121,22 +121,6 @@ class ekQuizDraw
 
 
 
-		$html.='
-		<script>
-			jQuery(document).ready(function(){
-				if (jQuery(\'#userTable\').length>0)
-				{
-					jQuery(\'#userTable\').dataTable({
-						"bAutoWidth": true,
-						"bJQueryUI": true,
-						"sPaginationType": "full_numbers",
-						"iDisplayLength": 50, // How many numbers by default per page
-						"order": [[0, "asc"]]
-					});
-				}
-
-			});
-		</script>	';
 
 		if($CSV==true)
 		{
