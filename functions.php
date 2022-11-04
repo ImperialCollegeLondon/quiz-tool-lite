@@ -268,6 +268,22 @@ class ekQuiz
         $function=  array( $this, 'drawHelpPage' );
         $myCapability = $minAccessLevel;
         add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
+
+		/* Create Export Pages */
+		$parentSlug = "edit.php?post_type=ek_pot";
+		$page_title="Question Stats";
+		$menu_title="Question Stats";
+		$menu_slug="ek-quiz-stats";
+		$function=  array( $this, 'drawStatsPage' );
+		$myCapability = $minAccessLevel;
+		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);
+
+
+	}
+
+	function drawStatsPage()
+	{
+		require_once EK_QUIZ_PATH.'admin/stats.php'; # Results
 	}
 
 	function drawPluginSettings()

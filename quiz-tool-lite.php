@@ -36,7 +36,15 @@ require_once EK_QUIZ_PATH.'/classes/class-export.php'; # Export Functions
 
 require_once EK_QUIZ_PATH.'/classes/class-upgrade.php'; # UPDATE checker
 
+// Stats stuff
+require_once EK_QUIZ_PATH.'/classes/stats/class-draw.php'; # UPDATE checker
+require_once EK_QUIZ_PATH.'/classes/stats/class-queries.php'; # UPDATE checker
+
+
 require_once EK_QUIZ_PATH.'/classes/check-for-actions.php'; # Export Functions
+
+
+
 
 
 /* Helpers */
